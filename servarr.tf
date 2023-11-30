@@ -54,7 +54,7 @@ module "nzbget" {
   service        = "nzbget"
   port           = "6790"
   workspace_vars = module.workspace_vars
-  depends_on     = [kubernetes_persistent_volume.k8s_services, kubernetes_persistent_volume.media_downloads]
+  depends_on     = [kubernetes_persistent_volume_claim.k8s_services, kubernetes_persistent_volume_claim.media_downloads]
 }
 
 module "muximux" {
@@ -62,7 +62,7 @@ module "muximux" {
   service        = "muximux"
   port           = "8383"
   workspace_vars = module.workspace_vars
-  depends_on     = [kubernetes_persistent_volume.k8s_services]
+  depends_on     = [kubernetes_persistent_volume_claim.k8s_services]
 }
 
 module "plexmetamanager" {
@@ -70,7 +70,7 @@ module "plexmetamanager" {
   service        = "plex-meta-manager"
   port           = "4321"
   workspace_vars = module.workspace_vars
-  depends_on     = [kubernetes_persistent_volume.k8s_services]
+  depends_on     = [kubernetes_persistent_volume_claim.k8s_services]
 }
 
 module "htpcmanager" {
@@ -78,7 +78,7 @@ module "htpcmanager" {
   service        = "htpcmanager"
   port           = "8085"
   workspace_vars = module.workspace_vars
-  depends_on     = [kubernetes_persistent_volume.k8s_services]
+  depends_on     = [kubernetes_persistent_volume_claim.k8s_services]
 }
 
 module "tautulli" {
@@ -86,6 +86,6 @@ module "tautulli" {
   service        = "tautulli"
   port           = "8181"
   workspace_vars = module.workspace_vars
-  depends_on     = [kubernetes_persistent_volume.k8s_services]
+  depends_on     = [kubernetes_persistent_volume_claim.k8s_services]
 }
 

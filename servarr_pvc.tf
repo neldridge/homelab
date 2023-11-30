@@ -21,6 +21,7 @@ resource "kubernetes_persistent_volume_claim" "k8s_services" {
       }
     }
   }
+  depends_on = [kubernetes_persistent_volume.k8s_services]
 }
 
 resource "kubernetes_persistent_volume_claim" "media_downloads" {
@@ -46,6 +47,7 @@ resource "kubernetes_persistent_volume_claim" "media_downloads" {
       }
     }
   }
+  depends_on = [kubernetes_persistent_volume.media_downloads]
 }
 
 resource "kubernetes_persistent_volume_claim" "media_library" {
@@ -71,4 +73,5 @@ resource "kubernetes_persistent_volume_claim" "media_library" {
       }
     }
   }
+  depends_on = [kubernetes_persistent_volume.media_library]
 }

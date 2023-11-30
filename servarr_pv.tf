@@ -20,6 +20,7 @@ resource "kubernetes_persistent_volume" "k8s_services" {
       }
     }
   }
+  depends_on = [kubernetes_namespace.servarr]
 }
 
 resource "kubernetes_persistent_volume" "media_downloads" {
@@ -44,6 +45,7 @@ resource "kubernetes_persistent_volume" "media_downloads" {
       }
     }
   }
+  depends_on = [kubernetes_namespace.servarr]
 }
 
 resource "kubernetes_persistent_volume" "media_library" {
@@ -68,4 +70,5 @@ resource "kubernetes_persistent_volume" "media_library" {
       }
     }
   }
+  depends_on = [kubernetes_namespace.servarr]
 }
