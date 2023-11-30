@@ -1,0 +1,50 @@
+module "workspace_vars" {
+  source = "./modules/workspace_vars"
+  namespace = "servarr"
+  timezone = "America/New_York"
+  uid = "997"
+  gid = "997"
+  nfs_server = "192.168.11.131"
+  media_library_size = "10Ti"
+  media_library_path = "/volume2/media-library/"
+  media_downloads_path = "/volume2/media-downloads/"
+  media_downloads_size = "3Ti"
+  k8s_services_path = "/volume2/k8s-services/"
+  k8s_services_size = "10Gi"
+}
+
+resource "kubernetes_namespace" "servarr" {
+  metadata {
+    name = module.workspace_vars.namespace
+  }
+}
+
+module "sonarr" {
+  source    = "./modules/arr"
+  service = "sonarr"
+  workspace_vars = module.workspace_vars
+}
+
+module "radarr" {
+  source    = "./modules/arr"
+  service = "radarr"
+  workspace_vars = module.workspace_vars
+}
+
+module "prowlarr" {
+  source    = "./modules/arr"
+  service = "prowlarr"
+  workspace_vars = module.workspace_vars
+}
+
+module "bazarr" {
+  source    = "./modules/arr"
+  service = "bazarr"
+  workspace_vars = module.workspace_vars
+}
+
+module "overseerr" {
+  source    = "./modules/arr"
+  service = "overseerr"
+  workspace_vars = module.workspace_vars
+}

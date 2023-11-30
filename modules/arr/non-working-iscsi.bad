@@ -1,0 +1,55 @@
+
+
+resource "kubernetes_persistent_volume_claim" "sonarr_data" {
+  metadata {
+    name      = "sonarr-data"
+    namespace = var.workspace_vars.namespace
+    labels = {
+      type = "data"
+      service = "sonarr"
+    }
+  }
+  spec {
+    storage_class_name = "synology-iscsi-storage"
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "500Mi"
+      }
+    }
+    volume_name = kubernetes_persistent_volume.sonarr_data.metadata[0].name
+  }
+}
+
+
+resource "kubernetes_persistent_volume" "sonarr_data" {
+  metadata {
+    name = "sonarr-data"
+    labels = {
+      type = "data"
+      service = "sonarr"
+    }
+  }
+  spec {
+    capacity = {
+      storage = "500Mi"
+    }
+
+    storage_class_name = "synology-iscsi-storage"
+    access_modes = ["ReadWriteOnce"]
+    claim_ref {
+      namespace = var.workspace_vars.namespace
+      name = "sonarr-data"
+    }
+    persistent_volume_source {
+      csi {
+        driver = "csi.san.synology.com"
+        volume_handle = "sonarr-data"
+        fs_type = "ext4"
+        volume_attributes = {
+          "service" = "sonarr"
+        }
+      }
+    }
+  }
+}
