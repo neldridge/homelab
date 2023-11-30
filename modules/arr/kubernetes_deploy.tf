@@ -44,13 +44,13 @@ resource "kubernetes_deployment" "deployment" {
           }
 
           volume_mount {
-            name       = "${var.service}-media-library-tv"
+            name       = "${var.service}-media-library"
             mount_path = "/tv"
             sub_path   = "TV Shows/"
           }
 
           volume_mount {
-            name       = "${var.service}-media-library-movies"
+            name       = "${var.service}-media-library"
             mount_path = "/movies"
             sub_path   = "Movies/"
           }
