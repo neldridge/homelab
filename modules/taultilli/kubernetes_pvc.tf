@@ -1,7 +1,7 @@
 resource "kubernetes_persistent_volume_claim" "plexlogs" {
   metadata {
     name      = "plex-logs"
-    namespace = module.workspace_vars.namespace
+    namespace = var.workspace_vars.namespace
     labels = {
       type = "plex-logs"
     }
