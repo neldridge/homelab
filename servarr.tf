@@ -55,3 +55,24 @@ module "nzbget" {
   port           = "6790"
   workspace_vars = module.workspace_vars
 }
+
+module "muximux" {
+  source         = "./modules/no-mounts"
+  service        = "muximux"
+  port           = "8383"
+  workspace_vars = module.workspace_vars
+}
+
+module "plexmetamanager" {
+  source         = "./modules/no-mounts"
+  service        = "plex-meta-manager"
+  port           = "4321"
+  workspace_vars = module.workspace_vars
+}
+
+module "htpcmanager" {
+  source         = "./modules/no-mounts"
+  service        = "htpcmanager"
+  port           = "8085"
+  workspace_vars = module.workspace_vars
+}
