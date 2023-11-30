@@ -82,7 +82,7 @@ module "htpcmanager" {
 }
 
 module "tautulli" {
-  source         = "./modules/taultilli"
+  source         = "./modules/tautilli"
   service        = "tautulli"
   port           = "8181"
   workspace_vars = module.workspace_vars
