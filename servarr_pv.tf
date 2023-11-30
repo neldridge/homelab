@@ -7,7 +7,7 @@ resource "kubernetes_persistent_volume" "k8s_services" {
   }
   spec {
     capacity = {
-      storage = "10Gi"
+      storage = module.workspace_vars.k8s_services_size
     }
 
     storage_class_name = "nfs-${module.workspace_vars.k8s_services_name}"
