@@ -7,9 +7,9 @@ resource "kubernetes_persistent_volume_claim" "k8s_services" {
     }
   }
   spec {
-    volume_name = module.workspace_vars.k8s_services_name
+    volume_name        = module.workspace_vars.k8s_services_name
     storage_class_name = "nfs-${module.workspace_vars.k8s_services_name}"
-    access_modes = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteMany"]
     selector {
       match_labels = {
         type = module.workspace_vars.k8s_services_name
@@ -32,9 +32,9 @@ resource "kubernetes_persistent_volume_claim" "media_downloads" {
     }
   }
   spec {
-    volume_name = module.workspace_vars.media_downloads_name
+    volume_name        = module.workspace_vars.media_downloads_name
     storage_class_name = "nfs-${module.workspace_vars.media_downloads_name}"
-    access_modes = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteMany"]
     selector {
       match_labels = {
         type = module.workspace_vars.media_downloads_name
@@ -57,9 +57,9 @@ resource "kubernetes_persistent_volume_claim" "media_library" {
     }
   }
   spec {
-    volume_name = module.workspace_vars.media_library_name
+    volume_name        = module.workspace_vars.media_library_name
     storage_class_name = "nfs-${module.workspace_vars.media_library_name}"
-    access_modes = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteMany"]
     selector {
       match_labels = {
         type = module.workspace_vars.media_library_name

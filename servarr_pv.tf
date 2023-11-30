@@ -11,12 +11,12 @@ resource "kubernetes_persistent_volume" "k8s_services" {
     }
 
     storage_class_name = "nfs-${module.workspace_vars.k8s_services_name}"
-    access_modes = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteMany"]
 
     persistent_volume_source {
       nfs {
         server = module.workspace_vars.nfs_server
-        path = module.workspace_vars.k8s_services_path
+        path   = module.workspace_vars.k8s_services_path
       }
     }
   }
@@ -35,12 +35,12 @@ resource "kubernetes_persistent_volume" "media_downloads" {
     }
 
     storage_class_name = "nfs-${module.workspace_vars.media_downloads_name}"
-    access_modes = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteMany"]
 
     persistent_volume_source {
       nfs {
         server = module.workspace_vars.nfs_server
-        path = module.workspace_vars.media_downloads_path
+        path   = module.workspace_vars.media_downloads_path
       }
     }
   }
@@ -59,12 +59,12 @@ resource "kubernetes_persistent_volume" "media_library" {
     }
 
     storage_class_name = "nfs-${module.workspace_vars.media_library_name}"
-    access_modes = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteMany"]
 
     persistent_volume_source {
       nfs {
         server = module.workspace_vars.nfs_server
-        path = module.workspace_vars.media_library_path
+        path   = module.workspace_vars.media_library_path
       }
     }
   }

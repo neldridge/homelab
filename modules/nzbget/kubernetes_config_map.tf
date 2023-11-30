@@ -7,6 +7,6 @@ resource "kubernetes_config_map" "env" {
     "PUID" = var.workspace_vars.uid
     "PGID" = var.workspace_vars.gid
     "TZ"   = var.workspace_vars.timezone
-    "port" = local.port_mapping[var.service]
+    "port" = var.port
   }
 }
