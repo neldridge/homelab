@@ -22,5 +22,15 @@ module "pihole" {
   service         = "pihole"
   workspace_vars  = module.pihole_vars
   container_image = "pihole/pihole:latest"
-  depends_on      = [kubernetes_namespace.pihole, kubernetes_persistent_volume_claim.pihole_k8s_services]
+  depends_on      = [kubernetes_namespace.pihole, module.pihole_share]
+}
+
+module "pihole_share" {
+  source     = "./modules/nfs-pv"
+  namespace  = module.pihole_vars.namespace
+  nfs_server = module.pihole_vars.nfs_server
+  share_name = module.pihole_vars.k8s_services_name
+  nfs_path   = module.pihole_vars.k8s_services_path
+  capacity   = module.pihole_vars.k8s_services_size
+  depends_on = [module.pihole_vars]
 }
