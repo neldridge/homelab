@@ -88,4 +88,3 @@ module "tautulli" {
   workspace_vars = module.workspace_vars
   depends_on     = [kubernetes_persistent_volume_claim.k8s_services]
 }
-
