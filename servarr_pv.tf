@@ -1,22 +1,22 @@
 resource "kubernetes_persistent_volume" "k8s_services" {
   metadata {
-    name = module.workspace_vars.k8s_services_name
+    name = module.servarr_vars.k8s_services_name
     labels = {
-      type = module.workspace_vars.k8s_services_name
+      type = module.servarr_vars.k8s_services_name
     }
   }
   spec {
     capacity = {
-      storage = module.workspace_vars.k8s_services_size
+      storage = module.servarr_vars.k8s_services_size
     }
 
-    storage_class_name = "nfs-${module.workspace_vars.k8s_services_name}"
+    storage_class_name = "nfs-${module.servarr_vars.k8s_services_name}"
     access_modes       = ["ReadWriteMany"]
 
     persistent_volume_source {
       nfs {
-        server = module.workspace_vars.nfs_server
-        path   = module.workspace_vars.k8s_services_path
+        server = module.servarr_vars.nfs_server
+        path   = module.servarr_vars.k8s_services_path
       }
     }
   }
@@ -25,23 +25,23 @@ resource "kubernetes_persistent_volume" "k8s_services" {
 
 resource "kubernetes_persistent_volume" "media_downloads" {
   metadata {
-    name = module.workspace_vars.media_downloads_name
+    name = module.servarr_vars.media_downloads_name
     labels = {
-      type = module.workspace_vars.media_downloads_name
+      type = module.servarr_vars.media_downloads_name
     }
   }
   spec {
     capacity = {
-      storage = module.workspace_vars.media_library_size
+      storage = module.servarr_vars.media_library_size
     }
 
-    storage_class_name = "nfs-${module.workspace_vars.media_downloads_name}"
+    storage_class_name = "nfs-${module.servarr_vars.media_downloads_name}"
     access_modes       = ["ReadWriteMany"]
 
     persistent_volume_source {
       nfs {
-        server = module.workspace_vars.nfs_server
-        path   = module.workspace_vars.media_downloads_path
+        server = module.servarr_vars.nfs_server
+        path   = module.servarr_vars.media_downloads_path
       }
     }
   }
@@ -50,23 +50,23 @@ resource "kubernetes_persistent_volume" "media_downloads" {
 
 resource "kubernetes_persistent_volume" "media_library" {
   metadata {
-    name = module.workspace_vars.media_library_name
+    name = module.servarr_vars.media_library_name
     labels = {
-      type = module.workspace_vars.media_library_name
+      type = module.servarr_vars.media_library_name
     }
   }
   spec {
     capacity = {
-      storage = module.workspace_vars.media_library_size
+      storage = module.servarr_vars.media_library_size
     }
 
-    storage_class_name = "nfs-${module.workspace_vars.media_library_name}"
+    storage_class_name = "nfs-${module.servarr_vars.media_library_name}"
     access_modes       = ["ReadWriteMany"]
 
     persistent_volume_source {
       nfs {
-        server = module.workspace_vars.nfs_server
-        path   = module.workspace_vars.media_library_path
+        server = module.servarr_vars.nfs_server
+        path   = module.servarr_vars.media_library_path
       }
     }
   }
