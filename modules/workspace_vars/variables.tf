@@ -9,14 +9,21 @@ variable "namespace" {
   description = "K8s namespace to deploy to"
 }
 
+variable "domain" {
+  type        = string
+  description = "Domain to use for the service"
+}
+
 variable "uid" {
   type        = string
   description = "UID for the container"
+  default     = ""
 }
 
 variable "gid" {
   type        = string
   description = "GID for the container"
+  default     = ""
 }
 
 variable "nfs_server" {
@@ -33,11 +40,13 @@ variable "media_library_name" {
 variable "media_library_path" {
   type        = string
   description = "Path to the media library"
+  default     = ""
 }
 
 variable "media_library_size" {
   type        = string
   description = "Size of the media library"
+  default     = ""
 }
 
 variable "media_downloads_name" {
@@ -49,11 +58,13 @@ variable "media_downloads_name" {
 variable "media_downloads_path" {
   type        = string
   description = "Path to the media downloads"
+  default     = ""
 }
 
 variable "media_downloads_size" {
   type        = string
   description = "Size of the media downloads"
+  default     = ""
 }
 
 variable "k8s_services_name" {
@@ -65,9 +76,11 @@ variable "k8s_services_name" {
 variable "k8s_services_path" {
   type        = string
   description = "Path to the k8s services"
+  default     = ""
 }
 
 variable "k8s_services_size" {
   type        = string
   description = "Size of the k8s services"
+  default     = ""
 }

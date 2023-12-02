@@ -1,9 +1,13 @@
+output "timezone" {
+  value = var.timezone
+}
+
 output "namespace" {
   value = var.namespace
 }
 
-output "timezone" {
-  value = var.timezone
+output "domain" {
+  value = var.domain
 }
 
 output "uid" {
