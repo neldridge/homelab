@@ -11,7 +11,7 @@ resource "kubernetes_persistent_volume" "persistent_volume" {
       storage = var.capacity
     }
 
-    storage_class_name = local.volume_name
+    storage_class_name = local.storage_class_name
     access_modes       = ["ReadWriteMany"]
 
     persistent_volume_source {

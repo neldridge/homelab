@@ -24,6 +24,8 @@ variable "nfs_path" {
 }
 
 locals {
-  volume_name = "nfs-${var.share_name}"
+  storage_class_name = "nfs-${var.share_name}"
+  volume_name        = var.share_name
+  volume_claim_name  = var.share_name
 }
 

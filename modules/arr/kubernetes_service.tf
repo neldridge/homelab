@@ -28,7 +28,8 @@ resource "kubernetes_service" "svc_lb" {
       "servarr.app" = var.service
     }
     port {
-      port = local.port_mapping[var.service]
+      target_port = local.port_mapping[var.service]
+      port        = "80"
     }
   }
   depends_on = [

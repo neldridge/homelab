@@ -20,8 +20,8 @@ resource "kubernetes_namespace" "pihole" {
 module "pihole" {
   source          = "./modules/pihole"
   service         = "pihole"
-  workspace_vars  = module.pihole_vars
   container_image = "pihole/pihole:latest"
+  workspace_vars  = module.pihole_vars
   depends_on      = [kubernetes_namespace.pihole, module.pihole_share]
 }
 
