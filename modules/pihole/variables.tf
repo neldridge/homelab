@@ -14,6 +14,31 @@ variable "container_image" {
   default     = ""
 }
 
+variable "iscsi_portal" {
+  type    = string
+  default = ""
+}
+
+variable "iscsi_iqn" {
+  type    = string
+  default = ""
+}
+
+variable "iscsi_lun" {
+  type    = number
+  default = 1
+}
+
+variable "iscsi_fs_type" {
+  type    = string
+  default = "ext4"
+}
+
+variable "iscsi_read_only" {
+  type    = bool
+  default = false
+}
+
 locals {
   container_image = (var.container_image == "" ? "lscr.io/linuxserver/${var.service}:latest" : var.container_image)
   dns_ports = [

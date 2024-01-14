@@ -11,11 +11,11 @@ resource "kubernetes_persistent_volume" "plexlogs" {
     }
 
     storage_class_name = "nfs-plex-logs"
-    access_modes       = ["ReadWriteMany"]
+    access_modes       = ["ReadOnlyMany"]
 
     persistent_volume_source {
       nfs {
-        server = "192.168.11.199"
+        server = "192.168.11.129"
         path   = "/plexlogs"
       }
     }

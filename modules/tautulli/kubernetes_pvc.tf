@@ -9,7 +9,7 @@ resource "kubernetes_persistent_volume_claim" "plexlogs" {
   spec {
     volume_name        = "plex-logs"
     storage_class_name = "nfs-plex-logs"
-    access_modes       = ["ReadWriteMany"]
+    access_modes       = ["ReadOnlyMany"]
     selector {
       match_labels = {
         type = "plex-logs"
@@ -21,4 +21,7 @@ resource "kubernetes_persistent_volume_claim" "plexlogs" {
       }
     }
   }
+  depends_on = [
+    kubernetes_persistent_volume.plexlogs
+  ]
 }

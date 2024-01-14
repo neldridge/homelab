@@ -21,16 +21,8 @@ module "pihole" {
   source          = "./modules/pihole"
   service         = "pihole"
   container_image = "pihole/pihole:latest"
+  iscsi_portal    = "192.168.11.131:3260"
+  iscsi_iqn       = "iqn.2000-01.com.synology:pelican.pihole.7b01f1cb7fb"
   workspace_vars  = module.pihole_vars
-  depends_on      = [kubernetes_namespace.pihole, module.pihole_share]
-}
-
-module "pihole_share" {
-  source     = "./modules/nfs-pv"
-  namespace  = module.pihole_vars.namespace
-  nfs_server = module.pihole_vars.nfs_server
-  share_name = module.pihole_vars.k8s_services_name
-  nfs_path   = module.pihole_vars.k8s_services_path
-  capacity   = module.pihole_vars.k8s_services_size
-  depends_on = [module.pihole_vars]
+  depends_on      = [kubernetes_namespace.pihole]
 }

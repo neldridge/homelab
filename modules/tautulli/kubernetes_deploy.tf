@@ -40,7 +40,6 @@ resource "kubernetes_deployment" "deployment" {
           volume_mount {
             name       = "${var.service}-config"
             mount_path = "/config"
-            sub_path   = "${var.service}-config"
           }
 
           volume_mount {
@@ -52,8 +51,12 @@ resource "kubernetes_deployment" "deployment" {
 
         volume {
           name = "${var.service}-config"
-          persistent_volume_claim {
-            claim_name = var.workspace_vars.k8s_services_name
+          iscsi {
+            target_portal = var.iscsi_portal
+            iqn           = var.iscsi_iqn
+            lun           = var.iscsi_lun
+            fs_type       = var.iscsi_fs_type
+            read_only     = var.iscsi_read_only
           }
         }
 
