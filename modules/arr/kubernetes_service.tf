@@ -28,6 +28,7 @@ resource "kubernetes_service" "svc_lb" {
       "servarr.app" = var.service
     }
     port {
+      name        = "${var.service}-http"
       target_port = local.port_mapping[var.service]
       port        = "80"
     }

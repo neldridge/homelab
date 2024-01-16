@@ -38,6 +38,67 @@ module "servarr_media_library" {
   depends_on = [module.servarr_vars]
 }
 
+module "servarr_ingress" {
+  source         = "./modules/ingress"
+  workspace_vars = module.servarr_vars
+  service_scope  = "servarr"
+  domains = {
+    "requests.neldridge.net" : {
+      port : "5055",
+      service : "overseerr",
+    },
+    "radarr.${module.servarr_vars.domain}" : {
+      port : "7878",
+      service : "radarr",
+    },
+    "sonarr.${module.servarr_vars.domain}" : {
+      port : "8989",
+      service : "sonarr",
+    },
+    "readarr.${module.servarr_vars.domain}" : {
+      port : "8787",
+      service : "readarr",
+    },
+    "lazylibrarian.${module.servarr_vars.domain}" : {
+      port : "5299",
+      service : "lazylibrarian",
+    },
+    "prowlarr.${module.servarr_vars.domain}" : {
+      port : "9696",
+      service : "prowlarr",
+    },
+    "bazarr.${module.servarr_vars.domain}" : {
+      port : "6767",
+      service : "bazarr",
+    },
+    "overseerr.${module.servarr_vars.domain}" : {
+      port : "5055",
+      service : "overseerr",
+    },
+    "tautulli.${module.servarr_vars.domain}" : {
+      port : "8181",
+      service : "tautulli",
+    },
+    "htpcmanager.${module.servarr_vars.domain}" : {
+      port : "8085",
+      service : "htpcmanager",
+    },
+    "muximux.${module.servarr_vars.domain}" : {
+      port : "8383",
+      service : "muximux",
+    },
+    "plexmetamanager.${module.servarr_vars.domain}" : {
+      port : "4321",
+      service : "plex-meta-manager",
+    },
+  }
+
+  depends_on = [
+    kubernetes_namespace.servarr,
+    module.servarr_vars
+  ]
+}
+
 module "nginxbooks" {
   source         = "./modules/nginx-books"
   service        = "nginx-books"
