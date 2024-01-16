@@ -1,2 +1,4 @@
 .terraform
 **terraform.tfstate*
+dev-cluster/
+cert-manager-rt53-credentials.json
