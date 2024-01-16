@@ -38,6 +38,13 @@ module "servarr_media_library" {
   depends_on = [module.servarr_vars]
 }
 
+module "nginxbooks" {
+  source         = "./modules/nginx-books"
+  service        = "nginx-books"
+  workspace_vars = module.servarr_vars
+  depends_on     = [module.servarr_media_library]
+}
+
 module "lazylibrarian" {
   source  = "./modules/arr"
   service = "lazylibrarian"
