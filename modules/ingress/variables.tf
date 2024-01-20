@@ -3,6 +3,12 @@ variable "workspace_vars" {
   description = "This should be the module from the root level environment passed through for use locally"
 }
 
+variable "extra_annotations" {
+  type        = map(string)
+  description = "Extra annotations to add to the ingress"
+  default     = {}
+}
+
 variable "service_scope" {
   type        = string
   description = "Name of the service to create"

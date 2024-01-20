@@ -15,12 +15,22 @@ module "r53_ingress_lb_a3f_link" {
 }
 
 
+module "r53_dashboard_a3f_link" {
+  source     = "./modules/route53_record"
+  zone_id    = aws_route53_zone.a3f_link.zone_id
+  name       = "dashboard.a3f.link."
+  type       = "CNAME"
+  records    = ["${module.r53_ingress_lb_a3f_link.fqdn}."]
+  depends_on = [aws_route53_zone.a3f_link]
+}
+
+
 module "r53_books_a3f_link" {
   source     = "./modules/route53_record"
   zone_id    = aws_route53_zone.a3f_link.zone_id
   name       = "books.a3f.link."
   type       = "A"
-  records    = ["192.168.11.87"]
+  records    = ["192.168.11.88"]
   depends_on = [aws_route53_zone.a3f_link]
 }
 

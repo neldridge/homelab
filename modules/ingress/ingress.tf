@@ -2,10 +2,11 @@ resource "kubernetes_ingress_v1" "ingress" {
   metadata {
     name      = "${var.workspace_vars.namespace}-${var.service_scope}-ingress"
     namespace = var.workspace_vars.namespace
-    annotations = {
+    annotations = merge(var.extra_annotations, {
       "cert-manager.io/cluster-issuer" : "letsencrypt-production"
       "kubernetes.io/tls-acme" : "true"
-    }
+
+    })
   }
 
   spec {
