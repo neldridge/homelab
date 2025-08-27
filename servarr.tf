@@ -55,14 +55,14 @@ module "servarr_ingress" {
       port : "8989",
       service : "sonarr",
     },
-    "readarr.${module.servarr_vars.domain}" : {
-      port : "8787",
-      service : "readarr",
-    },
-    "lazylibrarian.${module.servarr_vars.domain}" : {
-      port : "5299",
-      service : "lazylibrarian",
-    },
+    # "readarr.${module.servarr_vars.domain}" : {
+    #   port : "8787",
+    #   service : "readarr",
+    # },
+    # "lazylibrarian.${module.servarr_vars.domain}" : {
+    #   port : "5299",
+    #   service : "lazylibrarian",
+    # },
     "prowlarr.${module.servarr_vars.domain}" : {
       port : "9696",
       service : "prowlarr",
@@ -99,36 +99,36 @@ module "servarr_ingress" {
   ]
 }
 
-module "booksing" {
-  source         = "./modules/booksing"
-  service        = "booksing"
-  iscsi_portal   = "192.168.11.131:3260"
-  iscsi_iqn      = "iqn.2000-01.com.synology:pelican.booksing.7b01f1cb7fb"
-  workspace_vars = module.servarr_vars
-  depends_on     = [module.servarr_media_downloads]
-}
+# module "booksing" {
+#   source         = "./modules/booksing"
+#   service        = "booksing"
+#   iscsi_portal   = "192.168.11.131:3260"
+#   iscsi_iqn      = "iqn.2000-01.com.synology:pelican.booksing.7b01f1cb7fb"
+#   workspace_vars = module.servarr_vars
+#   depends_on     = [module.servarr_media_downloads]
+# }
 
-module "lazylibrarian" {
-  source  = "./modules/arr"
-  service = "lazylibrarian"
-  extra_env_vars = {
-    "DOCKER_MODS" : "linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg"
-  }
-  iscsi_portal   = "192.168.11.131:3260"
-  iscsi_iqn      = "iqn.2000-01.com.synology:pelican.lazylibrarian.7b01f1cb7fb"
-  workspace_vars = module.servarr_vars
-  depends_on     = [module.servarr_media_library]
-}
+# module "lazylibrarian" {
+#   source  = "./modules/arr"
+#   service = "lazylibrarian"
+#   extra_env_vars = {
+#     "DOCKER_MODS" : "linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg"
+#   }
+#   iscsi_portal   = "192.168.11.131:3260"
+#   iscsi_iqn      = "iqn.2000-01.com.synology:pelican.lazylibrarian.7b01f1cb7fb"
+#   workspace_vars = module.servarr_vars
+#   depends_on     = [module.servarr_media_library]
+# }
 
-module "readarr" {
-  source         = "./modules/arr"
-  service        = "readarr"
-  container_tag  = "nightly"
-  iscsi_portal   = "192.168.11.131:3260"
-  iscsi_iqn      = "iqn.2000-01.com.synology:pelican.readarr.7b01f1cb7fb"
-  workspace_vars = module.servarr_vars
-  depends_on     = [module.servarr_media_downloads, module.servarr_media_library]
-}
+# module "readarr" {
+#   source         = "./modules/arr"
+#   service        = "readarr"
+#   container_tag  = "nightly"
+#   iscsi_portal   = "192.168.11.131:3260"
+#   iscsi_iqn      = "iqn.2000-01.com.synology:pelican.readarr.7b01f1cb7fb"
+#   workspace_vars = module.servarr_vars
+#   depends_on     = [module.servarr_media_downloads, module.servarr_media_library]
+# }
 
 module "sonarr" {
   source         = "./modules/arr"

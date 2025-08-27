@@ -52,23 +52,23 @@ module "r53_sonarr_a3f_link" {
   depends_on = [aws_route53_zone.a3f_link, module.r53_ingress_lb_a3f_link]
 }
 
-module "r53_readarr_a3f_link" {
-  source     = "./modules/route53_record"
-  zone_id    = aws_route53_zone.a3f_link.zone_id
-  name       = "readarr.a3f.link."
-  type       = "CNAME"
-  records    = ["${module.r53_ingress_lb_a3f_link.fqdn}."]
-  depends_on = [aws_route53_zone.a3f_link, module.r53_ingress_lb_a3f_link]
-}
+# module "r53_readarr_a3f_link" {
+#   source     = "./modules/route53_record"
+#   zone_id    = aws_route53_zone.a3f_link.zone_id
+#   name       = "readarr.a3f.link."
+#   type       = "CNAME"
+#   records    = ["${module.r53_ingress_lb_a3f_link.fqdn}."]
+#   depends_on = [aws_route53_zone.a3f_link, module.r53_ingress_lb_a3f_link]
+# }
 
-module "r53_lazylibrarian_a3f_link" {
-  source     = "./modules/route53_record"
-  zone_id    = aws_route53_zone.a3f_link.zone_id
-  name       = "lazylibrarian.a3f.link."
-  type       = "CNAME"
-  records    = ["${module.r53_ingress_lb_a3f_link.fqdn}."]
-  depends_on = [aws_route53_zone.a3f_link, module.r53_ingress_lb_a3f_link]
-}
+# module "r53_lazylibrarian_a3f_link" {
+#   source     = "./modules/route53_record"
+#   zone_id    = aws_route53_zone.a3f_link.zone_id
+#   name       = "lazylibrarian.a3f.link."
+#   type       = "CNAME"
+#   records    = ["${module.r53_ingress_lb_a3f_link.fqdn}."]
+#   depends_on = [aws_route53_zone.a3f_link, module.r53_ingress_lb_a3f_link]
+# }
 
 module "r53_prowlarr_a3f_link" {
   source     = "./modules/route53_record"
@@ -193,6 +193,15 @@ module "r53_fd0e_a3f_link" {
   name       = "fd0e.a3f.link."
   type       = "A"
   records    = ["192.168.11.242"]
+  depends_on = [aws_route53_zone.a3f_link]
+}
+
+module "r53_f9a4_a3f_link" {
+  source     = "./modules/route53_record"
+  zone_id    = aws_route53_zone.a3f_link.zone_id
+  name       = "f9a4.a3f.link."
+  type       = "A"
+  records    = ["192.168.11.238"]
   depends_on = [aws_route53_zone.a3f_link]
 }
 
