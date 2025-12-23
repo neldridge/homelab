@@ -46,7 +46,7 @@ locals {
     { port = 53, protocol = "TCP", name = "dns-tcp" },
   ]
   http_ports = [
-    { port = 80, protocol = "TCP", name = "pihole-http" },
-    { port = 443, protocol = "TCP", name = "pihole-https" },
+    { port = 8082, protocol = "TCP", name = "pihole-http" },
+    { port = 8443, protocol = "TCP", name = "pihole-https" },
   ]
 }

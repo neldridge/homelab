@@ -11,6 +11,10 @@ resource "kubernetes_deployment" "deployment" {
   spec {
     replicas = 1
 
+    strategy {
+      type = "Recreate"
+    }
+
     selector {
       match_labels = {
         "service" = var.service
@@ -25,9 +29,17 @@ resource "kubernetes_deployment" "deployment" {
       }
 
       spec {
+        host_network = true
+        dns_policy   = "ClusterFirstWithHostNet"
+
+        node_selector = {
+          "kubernetes.io/hostname" = "b5bc.a3f.link"
+        }
+
         container {
           image = local.container_image
           name  = var.service
+
           env_from {
             config_map_ref {
               name = kubernetes_config_map.env.metadata.0.name
@@ -35,6 +47,7 @@ resource "kubernetes_deployment" "deployment" {
           }
 
           dynamic "port" {
+            # for_each = concat(local.dns_ports)
             for_each = concat(local.dns_ports, local.http_ports)
             content {
               name           = port.value["name"]

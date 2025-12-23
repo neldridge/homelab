@@ -11,5 +11,10 @@ resource "kubernetes_config_map" "env" {
     # "PIHOLE_GID"   = var.workspace_vars.gid
     "WEB_UID" = var.workspace_vars.uid
     "WEB_GID" = var.workspace_vars.gid
+
+    "DNSMASQ_LISTENING" = "all"
+
+    "FTLCONF_webserver_port" = "8082o,[::]:8082o,8443os,[::]:8443os"
+
   }
 }
