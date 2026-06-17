@@ -61,6 +61,7 @@ resource "kubernetes_service" "svc_lb_http" {
       content {
         name     = port.value["name"]
         port     = port.value["port"]
+        target_port = port.value["port"]
         protocol = port.value["protocol"]
       }
     }
