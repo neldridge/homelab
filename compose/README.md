@@ -15,9 +15,8 @@ here describe bb9b and must be adapted for other users.
 The server checkout lives at `/opt/data/homelab/repo`. During migration it tracks
 `neldridge/composemigration`; switch to `main` after the pull request is merged.
 Compose runs from `/opt/data/homelab/repo/compose`.
-For the existing bb9b installation, `use-git.sh` switches to that checkout,
-links `.env` and `nginx/certs` to the existing runtime files, and updates systemd.
-Run it as root on bb9b; it preserves app data and the original deployment files.
+The existing bb9b installation links `.env` and `nginx/certs` to the runtime
+files outside the checkout. Systemd runs Compose from this checkout.
 For a fresh installation, copy `.env.example` to `.env` and adjust the host
 paths and UID/GID, then provide certificates and adapt the systemd unit.
 Application configs/databases, downloads, certificates, and private keys are
@@ -131,6 +130,3 @@ cd /opt/data/homelab/repo
 git fetch origin main
 git switch --track origin/main
 ```
-
-The installer defaults to `neldridge/composemigration`. After the merge, new
-installs can use `HOMELAB_BRANCH=main bash compose/use-git.sh`.
