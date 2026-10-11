@@ -12,7 +12,8 @@ here describe bb9b and must be adapted for other users.
 
 ## Files and storage
 
-The server checkout lives at `/opt/data/homelab/repo` on branch `main`.
+The server checkout lives at `/opt/data/homelab/repo`. During migration it tracks
+`neldridge/composemigration`; switch to `main` after the pull request is merged.
 Compose runs from `/opt/data/homelab/repo/compose`.
 For the existing bb9b installation, `use-git.sh` switches to that checkout,
 links `.env` and `nginx/certs` to the existing runtime files, and updates systemd.
@@ -102,13 +103,13 @@ updates while the unit is active, use the Compose `up -d` command above.
 
 Keep Kubernetes Servarr deployments at zero while Compose owns the data.
 
-## Pull and deploy from main
+## Pull and deploy
 
 Run as root on bb9b:
 
 ```bash
 cd /opt/data/homelab/repo
-git pull --ff-only origin main
+git pull --ff-only
 cd compose
 docker compose -f compose.yaml -f compose.proxy.yaml config --quiet
 docker compose -f compose.yaml -f compose.proxy.yaml pull
@@ -122,3 +123,14 @@ also rebinds its config file after Git replaces it. Back up application data
 before image upgrades. If changing the systemd unit, reinstall it and run
 `systemctl daemon-reload` as shown above. Keep edits to tracked files in Git;
 local `.env`, certificates, configs and downloads stay outside the checkout.
+
+After merging the migration pull request, switch the server checkout:
+
+```bash
+cd /opt/data/homelab/repo
+git fetch origin main
+git switch --track origin/main
+```
+
+The installer defaults to `neldridge/composemigration`. After the merge, new
+installs can use `HOMELAB_BRANCH=main bash compose/use-git.sh`.

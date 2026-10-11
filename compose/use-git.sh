@@ -5,6 +5,7 @@ set -euo pipefail
 [[ $(id -u) -eq 0 ]] || { echo 'Run this on bb9b as root.'; exit 1; }
 runtime=/opt/data/homelab
 repo="$runtime/repo"
+branch="${HOMELAB_BRANCH:-neldridge/composemigration}"
 mountpoint -q /opt/data
 mountpoint -q /mnt/media-library
 test -f "$runtime/.env"
@@ -13,14 +14,14 @@ test -f "$runtime/nginx/certs/requests/fullchain.pem"
 
 if [[ -e "$repo" ]]; then
     test -d "$repo/.git"
-    [[ $(git -C "$repo" branch --show-current) == main ]]
+    [[ $(git -C "$repo" branch --show-current) == "$branch" ]]
     [[ -z $(git -C "$repo" status --porcelain) ]] || {
         echo 'STOP: checkout has local changes; preserve them before updating.'
         exit 1
     }
-    git -C "$repo" pull --ff-only origin main
+    git -C "$repo" pull --ff-only origin "$branch"
 else
-    git clone --branch main --single-branch https://github.com/neldridge/homelab.git "$repo"
+    git clone --branch "$branch" https://github.com/neldridge/homelab.git "$repo"
 fi
 
 # Symlinks are ignored by Git. Secrets remain in the original runtime tree.
