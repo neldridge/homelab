@@ -8,7 +8,7 @@ RequiresMountsFor=/opt/data /mnt/media-library
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/opt/data/homelab
+WorkingDirectory=/opt/data/homelab/repo/compose
 ExecStartPre=/usr/bin/mountpoint -q /opt/data
 ExecStartPre=/usr/bin/mountpoint -q /mnt/media-library
 ExecStart=/usr/bin/docker compose -f compose.yaml -f compose.proxy.yaml up -d

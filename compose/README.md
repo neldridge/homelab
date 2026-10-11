@@ -12,8 +12,13 @@ here describe bb9b and must be adapted for other users.
 
 ## Files and storage
 
-Deploy the contents of this directory to `/opt/data/homelab` on the server.
-Copy `.env.example` to `.env` and adjust the host paths and UID/GID if needed.
+The server checkout lives at `/opt/data/homelab/repo` on branch `main`.
+Compose runs from `/opt/data/homelab/repo/compose`.
+For the existing bb9b installation, `use-git.sh` switches to that checkout,
+links `.env` and `nginx/certs` to the existing runtime files, and updates systemd.
+Run it as root on bb9b; it preserves app data and the original deployment files.
+For a fresh installation, copy `.env.example` to `.env` and adjust the host
+paths and UID/GID, then provide certificates and adapt the systemd unit.
 Application configs/databases, downloads, certificates, and private keys are
 not in Git and must be backed up separately.
 
@@ -41,7 +46,7 @@ Application ports are also published on the host, as in the working deployment.
 
 ## Start and inspect
 
-From `/opt/data/homelab`:
+From `/opt/data/homelab/repo/compose`:
 
 ```bash
 docker compose -f compose.yaml -f compose.proxy.yaml config --quiet
@@ -96,3 +101,24 @@ To stop the managed stack, use `systemctl stop homelab`. For configuration
 updates while the unit is active, use the Compose `up -d` command above.
 
 Keep Kubernetes Servarr deployments at zero while Compose owns the data.
+
+## Pull and deploy from main
+
+Run as root on bb9b:
+
+```bash
+cd /opt/data/homelab/repo
+git pull --ff-only origin main
+cd compose
+docker compose -f compose.yaml -f compose.proxy.yaml config --quiet
+docker compose -f compose.yaml -f compose.proxy.yaml pull
+docker compose -f compose.yaml -f compose.proxy.yaml up -d
+docker compose -f compose.yaml -f compose.proxy.yaml up -d --no-deps --force-recreate nginx
+docker compose -f compose.yaml -f compose.proxy.yaml ps -a
+```
+
+Git updates the files; Compose applies them to containers. Recreating Nginx
+also rebinds its config file after Git replaces it. Back up application data
+before image upgrades. If changing the systemd unit, reinstall it and run
+`systemctl daemon-reload` as shown above. Keep edits to tracked files in Git;
+local `.env`, certificates, configs and downloads stay outside the checkout.
