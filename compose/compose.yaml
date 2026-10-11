@@ -1,0 +1,220 @@
+name: homelab
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.20.3014-ls327@sha256:dffc730adcb8b4f4342792fbb27fcad9c62fb8660523f2aeb082416980d7fe0c
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    ports:
+      - "8989:8989"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/sonarr"
+        target: /config
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${DOWNLOAD_ROOT}"
+        target: /downloads
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/TV Shows"
+        target: /tv
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/Movies"
+        target: /movies
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/Books"
+        target: /books
+        bind:
+          create_host_path: false
+  radarr:
+    image: lscr.io/linuxserver/radarr:6.4.4.10685-ls319@sha256:7dfd049e79c00b16fbc29c3f5d96a9e7b9e73a23930b4c5b3c4541d60b366814
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    ports:
+      - "7878:7878"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/radarr"
+        target: /config
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${DOWNLOAD_ROOT}"
+        target: /downloads
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/TV Shows"
+        target: /tv
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/Movies"
+        target: /movies
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/Books"
+        target: /books
+        bind:
+          create_host_path: false
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:2.6.5.5623-ls163@sha256:f9151e5bc1025c6d0a630d503210cdcb6bb55a7cc098562609d96a408d838902
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    ports:
+      - "9696:9696"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/prowlarr"
+        target: /config
+        bind:
+          create_host_path: false
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:v1.6.2-ls367@sha256:c1673816321156b904af9b7e6415ea547ae9622e4acc375358f1e1eb9ed1e904
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    ports:
+      - "6767:6767"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/bazarr"
+        target: /config
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/TV Shows"
+        target: /tv
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/Movies"
+        target: /movies
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${LIBRARY_ROOT}/Books"
+        target: /books
+        bind:
+          create_host_path: false
+  overseerr:
+    image: docker.io/linuxserver/overseerr:v1.35.0-ls159@sha256:6108ed066d4a919c05251d9dab041c1e55e67ff7247e7b31be97b65ffcbaeeb1
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    ports:
+      - "5055:5055"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/overseerr"
+        target: /config
+        bind:
+          create_host_path: false
+  nzbget:
+    image: lscr.io/linuxserver/nzbget:v26.3-ls267@sha256:90f08a0c260f5ba3be401d9b21f7a92975ac0fb2331bb1f456ed9f09f3ca4ddb
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    ports:
+      - "6790:6790"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/nzbget"
+        target: /config
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${DOWNLOAD_ROOT}"
+        target: /downloads
+        bind:
+          create_host_path: false
+  kometa:
+    image: lscr.io/linuxserver/kometa:v2.5.2-ls122@sha256:6cd9ebf316deecdd7d4dc6e339369f699f849749fdef9009bb51cdd882b0abe7
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/plexmetamanager"
+        target: /config
+        bind:
+          create_host_path: false
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:v2.18.2-ls247@sha256:d3c53deb09f6b8fffd1476c7154da538394193955d1e909f3b126068102fb7cf
+    restart: on-failure
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    ports:
+      - "8181:8181"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: bind
+        source: "${CONFIG_ROOT}/tautulli"
+        target: /config
+        bind:
+          create_host_path: false

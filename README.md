@@ -1,4 +1,9 @@
 # My K8s Homelab
+Media services now run on Docker Compose on bb9b; see [Compose deployment](compose/README.md).
+The Terraform below remains for the Kubernetes infrastructure.
+
+For a new deployment with Codex, use [CODEX_PROMPT.md](CODEX_PROMPT.md).
+
 I have been on a journey to replace my home infrastructure with a K8s cluster to force myself to learn more about K8s.
 
 My previous stack was docker compose on 2 nodes, local disk storage with NFS on things that needed shared between. There were many reasons this process was painful, including updating services, keeping services running, and well, the servers were a SPOF.
