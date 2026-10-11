@@ -2,3 +2,10 @@
 **terraform.tfstate*
 dev-cluster/
 cert-manager-rt53-credentials.json
+.tls/
+compose/.env
+compose/nginx/certs/
+compose/config/
+compose/downloads/
+compose/migration-*/
+compose/**/*.before-*
