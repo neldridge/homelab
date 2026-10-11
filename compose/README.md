@@ -6,6 +6,10 @@ bb9b (192.168.11.10). Plex stays on its separate host.
 Services: Sonarr, Radarr, Prowlarr, Bazarr, Overseerr, NZBGet, Tautulli,
 Kometa, and Nginx. Muximux and HTPC Manager were retired.
 
+For a fresh installation on your own infrastructure, use
+[the Codex deployment prompt](../CODEX_PROMPT.md). The addresses and domains
+here describe bb9b and must be adapted for other users.
+
 ## Files and storage
 
 Deploy the contents of this directory to `/opt/data/homelab` on the server.
@@ -45,8 +49,32 @@ docker compose -f compose.yaml -f compose.proxy.yaml up -d
 docker compose -f compose.yaml -f compose.proxy.yaml ps -a
 ```
 
-Both Compose files are needed to include Nginx. Most images are pinned by
-digest; Nginx currently uses `stable-alpine`.
+Both Compose files are needed to include Nginx. Images use explicit release
+tags plus immutable digests, verified against published registry tags on
+October 11, 2026. A tag makes the version readable; the digest fixes the exact
+image content.
+
+| Service | Release tag |
+| --- | --- |
+| Sonarr | `4.0.20.3014-ls327` |
+| Radarr | `6.4.4.10685-ls319` |
+| Prowlarr | `2.6.5.5623-ls163` |
+| Bazarr | `v1.6.2-ls367` |
+| Overseerr | `v1.35.0-ls159` |
+| NZBGet | `v26.3-ls267` |
+| Kometa | `v2.5.2-ls122` |
+| Tautulli | `v2.18.2-ls247` |
+| Nginx (stable) | `1.30.5-alpine` |
+
+LinuxServer has [deprecated Overseerr](https://info.linuxserver.io/issues/2026-02-16-overseerr/)
+in favor of Seerr. This stack retains Overseerr's final published release
+on Docker Hub because that exact version tag is unavailable through LSCR.
+Migrating to Seerr requires changing the image, config mount and permissions
+according to its migration guide; do not substitute it blindly into this service.
+
+Before upgrading, stop affected applications and back up their config/database
+directories. Pull the pinned images, then run `up -d` to apply the update.
+Database migrations may require restoring the backup to roll back.
 
 ## Boot persistence
 
