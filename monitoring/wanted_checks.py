@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Read-only wanted observer; bounded requests, private persistent item state."""
+"""Wanted observer with bounded automatic searches and private persistent state."""
 import datetime
 import json
 import time
@@ -10,8 +10,8 @@ from service_checks import ROOT, atomic
 LIMIT = 10000
 THRESHOLD = 10 * 3600
 
-def request(url, headers):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=5) as response:
+def request(url, headers, data=None):
+    with urllib.request.urlopen(urllib.request.Request(url, headers=headers, data=data), timeout=5) as response:
         body = response.read(32 * 1024 * 1024 + 1)
     if len(body) > 32 * 1024 * 1024:
         raise ValueError('API snapshot exceeds 32 MiB')
@@ -53,9 +53,46 @@ def observe(service, items, queue, old, now):
         # A long observer outage cannot prove continuous eligibility.
         prior = old.get(ident, {})
         since = prior.get('since', now) if now - prior.get('seen', 0) <= 900 else now
-        current[ident] = {'since': since, 'seen': now}
+        current[ident] = {'since': since, 'seen': now,
+                          'searches': dict(prior.get('searches', {})) if since == prior.get('since') else {}}
     ages = [max(0, now - x['since']) for x in current.values()]
     return current, sum(age >= THRESHOLD for age in ages), max(ages, default=0)
+
+def search_missing(service, base, headers, current, statepath, now):
+    """Persist attempts before POST: an ambiguous timeout must not duplicate commands."""
+    failures = 0
+    for hour in (2, 5):
+        stage = str(hour)
+        due = []
+        for ident, item in current.items():
+            age = now - item['since']
+            searches = item['searches']
+            if age >= THRESHOLD or (hour == 2 and age >= 5 * 3600):
+                searches.setdefault(stage, {'status': 'skipped', 'at': now})
+            elif age >= hour * 3600 and stage not in searches and len(due) < 100:
+                due.append(ident)
+        if not due:
+            continue
+        for ident in due:
+            current[ident]['searches'][stage] = {'status': 'submitted', 'at': now}
+        atomic(statepath, json.dumps(current))
+        statepath.chmod(0o600)
+        command = {'name': 'MoviesSearch' if service == 'radarr' else 'EpisodeSearch',
+                   'movieIds' if service == 'radarr' else 'episodeIds': [int(x) for x in due]}
+        try:
+            result = request(base + 'command', {**headers, 'Content-Type': 'application/json'},
+                             json.dumps(command).encode())
+            if not isinstance(result, dict) or not result.get('id'):
+                raise ValueError('Search command was not acknowledged')
+            for ident in due:
+                current[ident]['searches'][stage].update(status='accepted', command_id=result['id'])
+        except Exception as exc:
+            failures += len(due)
+            for ident in due:
+                current[ident]['searches'][stage].update(status='error', error=type(exc).__name__)
+        atomic(statepath, json.dumps(current))
+        statepath.chmod(0o600)
+    return failures
 
 def run():
     keys = json.loads((ROOT / 'app-keys.json').read_text())
@@ -78,6 +115,10 @@ def run():
             current, overdue, age = observe(service, items, queue, old, time.time())
             atomic(statepath, json.dumps(current))
             statepath.chmod(0o600)
+            failures = search_missing(service, base, headers, current, statepath, time.time())
+            atomic(statepath, json.dumps(current))
+            statepath.chmod(0o600)
+            metric('search_failures', failures)
             metric('overdue', overdue)
             metric('eligible', len(current))
             metric('oldest_seconds', age)

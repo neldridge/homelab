@@ -3,7 +3,7 @@
 Working deployment migrated from MicroK8s on October 11, 2026. Runs on
 bb9b (192.168.11.10). Plex stays on its separate host.
 
-Services: Sonarr, Radarr, Prowlarr, Bazarr, Overseerr, NZBGet, Tautulli,
+Services: Sonarr, Radarr, Prowlarr, Bazarr, Seerr, NZBGet, Tautulli,
 Kometa, and Nginx. Muximux and HTPC Manager were retired.
 
 For a fresh installation on your own infrastructure, use
@@ -39,9 +39,10 @@ nginx/certs/requests/privkey.pem
 ```
 
 The first certificate covers `*.a3f.link`; the second covers
-`requests.neldridge.net`. Certificate renewal still needs automation.
+`requests.neldridge.net`. Certificate renewal uses guarded Certbot DNS-01; see
+[renewal and rollback](../certificates/README.md).
 Internal service names resolve to bb9b. The router forwards public TCP 3579
-to bb9b TCP 443 for `https://requests.neldridge.net:3579/` (Overseerr).
+to bb9b TCP 443 for `https://requests.neldridge.net:3579/` (Seerr).
 Application ports are also published on the host, as in the working deployment.
 
 ## Start and inspect
@@ -65,17 +66,15 @@ image content.
 | Radarr | `6.4.4.10685-ls319` |
 | Prowlarr | `2.6.5.5623-ls163` |
 | Bazarr | `v1.6.2-ls367` |
-| Overseerr | `v1.35.0-ls159` |
+| Seerr (official, linux/amd64) | `v3.5.0` |
 | NZBGet | `v26.3-ls267` |
 | Kometa | `v2.5.2-ls122` |
 | Tautulli | `v2.18.2-ls247` |
 | Nginx (stable) | `1.30.5-alpine` |
 
-LinuxServer has [deprecated Overseerr](https://info.linuxserver.io/issues/2026-02-16-overseerr/)
-in favor of Seerr. This stack retains Overseerr's final published release
-on Docker Hub because that exact version tag is unavailable through LSCR.
-Migrating to Seerr requires changing the image, config mount and permissions
-according to its migration guide; do not substitute it blindly into this service.
+Seerr uses the official image, `init: true`, UID/GID 1000:1000 and `/app/config`.
+Its data lives in `/opt/data/homelab/config/seerr`; the original Overseerr
+directory is retained untouched. See [migration and rollback](SEERR_MIGRATION.md).
 
 Before upgrading, stop affected applications and back up their config/database
 directories. Pull the pinned images, then run `up -d` to apply the update.

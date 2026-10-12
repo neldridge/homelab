@@ -3,6 +3,8 @@
 import base64
 import configparser
 import json
+import sys
+import fcntl
 import re
 import subprocess
 import time
@@ -14,18 +16,38 @@ from service_checks import ROOT, CONFIG, atomic, request
 
 LIMIT = 2 * 1024 * 1024
 REQUESTS = 0
-MAX_REQUESTS = 160
+MAX_REQUESTS = 480
 ACCEPT = ', '.join(['application/vnd.oci.image.index.v1+json','application/vnd.docker.distribution.manifest.list.v2+json','application/vnd.oci.image.manifest.v1+json','application/vnd.docker.distribution.manifest.v2+json'])
 RELEASES = {'seerr':'seerr-team/seerr','grafana':'grafana/grafana','alloy':'grafana/alloy','loki':'grafana/loki','prometheus':'prometheus/prometheus','blackbox':'prometheus/blackbox_exporter','snmp':'prometheus/snmp_exporter','exportarr':'onedr0p/exportarr'}
 
 def fetch(url, headers=None):
     global REQUESTS
-    REQUESTS += 1
-    if REQUESTS > MAX_REQUESTS: raise ValueError("request budget exhausted")
-    with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'homelab-maintenance/1', **(headers or {})}), timeout=8) as r:
-        raw = r.read(LIMIT + 1)
-        if len(raw) > LIMIT: raise ValueError('response bound')
-        return json.loads(raw), r.headers
+    for attempt in range(3):
+        REQUESTS += 1
+        if REQUESTS > MAX_REQUESTS: raise ValueError("request budget exhausted")
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'homelab-maintenance/1', **(headers or {})}), timeout=8) as r:
+                raw = r.read(LIMIT + 1)
+                if len(raw) > LIMIT: raise ValueError('response bound')
+                return json.loads(raw), r.headers
+        except urllib.error.HTTPError as exc:
+            # Authentication challenges are handled by registry(), not retried here.
+            if exc.code not in (408, 429, 500, 502, 503, 504) or attempt == 2:
+                raise
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == 2: raise
+        time.sleep((1, 3)[attempt])
+
+def failure_streak(row, previous):
+    if not row.get('lookup_error'):
+        return 0
+    return previous.get(row['service'], {}).get('lookup_failures', 0) + 1
+
+def error_details(exc):
+    result = {'lookup_error': type(exc).__name__}
+    if isinstance(exc, urllib.error.HTTPError): result['lookup_http_status'] = exc.code
+    # Do not record response bodies, credentials, or URLs.
+    return result
 
 def version(value):
     """Only stable numeric versions; LSIO rebuild number is compared separately."""
@@ -110,7 +132,11 @@ def app_version(s):
     raise ValueError('no app endpoint')
 
 def run():
+    global REQUESTS
+    REQUESTS = 0
     now=time.time(); lines=[]; rows=[]; cache={}
+    saved = ROOT/'versions.json'
+    previous = {r['service']: r for r in json.loads(saved.read_text())['rows']} if saved.exists() else {}
     def metric(name,value,**labels):
         labels={'host':'bb9b',**labels}
         labels={k:str(v)[:512] for k,v in labels.items()}
@@ -174,7 +200,7 @@ def run():
             else: row['status']='channel-review'
             metric('lookup_ok',1,service=service)
         except Exception as e:
-            row['lookup_error']=type(e).__name__;metric('lookup_ok',0,service=service)
+            row.update(error_details(e));metric('lookup_ok',0,service=service)
         rows.append(row)
     # Plex is a separate server, not an R710 container. Public stable channel only.
     row={'service':'plex','image':'external PMS','installed_tag':'n/a','image_id':'n/a','running_digest':'n/a','architecture':'unknown','channel':'public stable','installed_channel':'unverified (public/beta)','installed_version':'unknown','version_source':'api','available_tag':'unknown','available_digest':'n/a','status':'unknown'}
@@ -187,9 +213,11 @@ def run():
         def pv(v): return tuple(map(int,v.split('-')[0].split('.')))
         row['status']='update' if pv(public['version'])>pv(row['installed_version']) else ('current' if public['version']==row['installed_version'] else 'installed-ahead')
         metric('lookup_ok',1,service='plex')
-    except Exception as e: row['lookup_error']=type(e).__name__;metric('lookup_ok',0,service='plex')
+    except Exception as e: row.update(error_details(e));metric('lookup_ok',0,service='plex')
     metric('application_known',int(row['installed_version']!='unknown'),service='plex');rows.append(row)
     for row in rows:
+        row['lookup_failures'] = failure_streak(row, previous)
+        metric('lookup_failures', row['lookup_failures'], service=row['service'])
         metric('info',1,**{k:row[k] for k in ('service','image','installed_tag','running_digest','image_id','architecture','channel','installed_channel','installed_version','version_source','available_tag','available_digest','status')})
         metric('update_available',int(row['status'] in ('update','image-rebuild','mutable-tag-changed')),service=row['service'])
     metric('checked_timestamp',now)
@@ -197,4 +225,17 @@ def run():
     atomic(ROOT/'textfile/versions.prom','\n'.join(lines)+'\n')
     print(json.dumps({'services':len(rows),'statuses':{s:sum(r['status']==s for r in rows) for s in sorted({r['status'] for r in rows})},'requests':REQUESTS,'unknown_applications':[r['service'] for r in rows if r['installed_version']=='unknown']}))
 
-if __name__=='__main__': run()
+def main():
+    # Daily and recovery timers can overlap; serialize without queuing duplicate runs.
+    with (ROOT/'versions.lock').open('w') as lock:
+        try: fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError: return
+        if '--retry-failed' in sys.argv:
+            saved = ROOT/'versions.json'
+            if not saved.exists(): return
+            state = json.loads(saved.read_text())
+            if not any(r.get('lookup_error') for r in state['rows']): return
+            if time.time() - state['checked'] < 14 * 60: return
+        run()
+
+if __name__=='__main__': main()

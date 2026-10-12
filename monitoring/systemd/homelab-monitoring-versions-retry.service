@@ -1,0 +1,20 @@
+[Unit]
+Description=Retry failed stable release lookups
+RequiresMountsFor=/opt/data
+After=docker.service network-online.target
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/monitoring/version_checks.py --retry-failed
+TimeoutStartSec=600
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/data/homelab/monitoring
+MemoryMax=128M
+CPUQuota=25%
+TasksMax=32
+Environment=GOMAXPROCS=2
+Nice=15
+IOSchedulingClass=idle
