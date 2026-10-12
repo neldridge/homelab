@@ -1,0 +1,122 @@
+logging {
+  level = "warn"
+}
+prometheus.exporter.unix "host" {
+  rootfs_path = "/rootfs"
+  procfs_path = "/host/proc"
+  sysfs_path = "/host/sys"
+  set_collectors = ["cpu", "diskstats", "filesystem", "loadavg", "meminfo", "netdev", "stat", "time", "uname", "vmstat", "textfile"]
+  textfile {
+    directory = "/monitoring/textfile"
+  }
+  filesystem {
+    fs_types_exclude = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fuse.*|hugetlbfs|mqueue|nfs4?|nsfs|overlay|proc|pstore|rpc_pipefs|securityfs|squashfs|sysfs|tracefs|tmpfs)$"
+    mount_points_exclude = "^/(dev|proc|sys|mnt|media-library|var/lib/docker)($|/)"
+  }
+}
+prometheus.scrape "host" {
+  targets = prometheus.exporter.unix.host.targets
+  forward_to = [prometheus.relabel.host.receiver]
+  scrape_interval = "15s"
+  job_name = "r710-host"
+}
+prometheus.relabel "host" {
+  forward_to = [prometheus.remote_write.local.receiver]
+  rule {
+    target_label = "job"
+    replacement = "r710-host"
+  }
+  rule {
+    target_label = "host"
+    replacement = "bb9b"
+  }
+  rule {
+    target_label = "instance"
+    replacement = "bb9b"
+  }
+}
+prometheus.remote_write "local" {
+  wal {
+    truncate_frequency = "15m"
+    min_keepalive_time = "5m"
+    max_keepalive_time = "1h"
+  }
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+local.file "docker_targets" {
+  filename = "/monitoring/discovery/docker-targets.json"
+}
+loki.source.file "docker" {
+  targets = encoding.from_json(local.file.docker_targets.content)
+  tail_from_end = true
+  forward_to = [loki.process.docker.receiver]
+}
+loki.process "docker" {
+  stage.docker {}
+  forward_to = [loki.process.bounded.receiver]
+}
+local.file_match "canary" {
+  path_targets = [{"__path__" = "/monitoring/logs/canary.log", "service" = "canary", "host" = "bb9b", "job" = "canary"}]
+}
+loki.source.file "canary" {
+  targets = local.file_match.canary.targets
+  forward_to = [loki.process.canary.receiver]
+}
+loki.process "canary" {
+  stage.json {
+    expressions = {"timestamp" = "timestamp"}
+  }
+  stage.timestamp {
+    source = "timestamp"
+    format = "Unix"
+  }
+  forward_to = [loki.process.bounded.receiver]
+}
+loki.source.journal "host" {
+  max_age = "1h"
+  labels = {"service" = "host", "host" = "bb9b", "job" = "journal"}
+  forward_to = [loki.process.bounded.receiver]
+}
+loki.process "bounded" {
+  stage.replace {
+    expression = "(?i)(apikey|api_key|token|password|authorization)([= :]+)[^ &\\\"']+"
+    replace = "[REDACTED]"
+  }
+  stage.drop {
+    longer_than = "8KB"
+  }
+  stage.limit {
+    rate = 5
+    burst = 10
+    by_label_name = "service"
+    drop = true
+  }
+  stage.label_keep {
+    values = ["service", "host", "job"]
+  }
+  forward_to = [loki.write.local.receiver]
+}
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+local.file_match "applications" {
+  path_targets = [
+    {"__path__" = "/rootfs/opt/data/homelab/config/sonarr/logs/sonarr.txt", "service" = "sonarr", "host" = "bb9b", "job" = "application"},
+    {"__path__" = "/rootfs/opt/data/homelab/config/radarr/logs/radarr.txt", "service" = "radarr", "host" = "bb9b", "job" = "application"},
+    {"__path__" = "/rootfs/opt/data/homelab/config/prowlarr/logs/prowlarr.txt", "service" = "prowlarr", "host" = "bb9b", "job" = "application"},
+    {"__path__" = "/rootfs/opt/data/homelab/config/bazarr/log/bazarr.log", "service" = "bazarr", "host" = "bb9b", "job" = "application"},
+    {"__path__" = "/rootfs/opt/data/homelab/config/tautulli/logs/tautulli.log", "service" = "tautulli", "host" = "bb9b", "job" = "application"},
+    {"__path__" = "/rootfs/opt/data/homelab/config/plexmetamanager/logs/meta.log", "service" = "kometa", "host" = "bb9b", "job" = "application"},
+  ]
+}
+loki.source.file "applications" {
+  targets = local.file_match.applications.targets
+  tail_from_end = true
+  forward_to = [loki.process.bounded.receiver]
+}

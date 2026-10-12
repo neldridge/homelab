@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "name": "certificates",
+      "rules": [
+        {
+          "alert": "CertificateRenewalFailed",
+          "expr": "homelab_certificate_renewal_success == 0",
+          "for": "5m"
+        },
+        {
+          "alert": "CertificateRenewalStale",
+          "expr": "(time() - homelab_certificate_renewal_last_success_seconds > 36*3600) or absent(homelab_certificate_renewal_last_success_seconds)",
+          "for": "5m"
+        }
+      ]
+    }
+  ]
+}

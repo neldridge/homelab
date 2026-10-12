@@ -1,0 +1,8 @@
+[Unit]
+Description=Schedule storage result observation
+[Timer]
+OnBootSec=20
+OnCalendar=*-*-* *:*:10,40
+AccuracySec=1s
+[Install]
+WantedBy=timers.target

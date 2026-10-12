@@ -1,0 +1,57 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListHostedZones"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "route53:GetChange",
+      "Resource": "arn:aws:route53:::change/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": "arn:aws:route53:::hostedzone/Z083123433QHFF5C6Q1AO",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": [
+            "TXT"
+          ],
+          "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+            "_acme-challenge.a3f.link",
+            "_acme-challenge.grafana.a3f.link"
+          ],
+          "route53:ChangeResourceRecordSetsActions": [
+            "UPSERT",
+            "DELETE"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "route53:ChangeResourceRecordSets",
+      "Resource": "arn:aws:route53:::hostedzone/ZBECE55OG3JSE",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": [
+            "TXT"
+          ],
+          "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+            "_acme-challenge.requests.neldridge.net",
+            "_acme-challenge.grafana.neldridge.net"
+          ],
+          "route53:ChangeResourceRecordSetsActions": [
+            "UPSERT",
+            "DELETE"
+          ]
+        }
+      }
+    }
+  ]
+}

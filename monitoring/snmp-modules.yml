@@ -1,0 +1,308 @@
+modules:
+  synology:
+    walk:
+    - 1.3.6.1.4.1.6574.1
+    - 1.3.6.1.4.1.6574.2
+    - 1.3.6.1.4.1.6574.3
+    - 1.3.6.1.4.1.6574.4
+    - 1.3.6.1.4.1.6574.5
+    - 1.3.6.1.2.1.25.2.3
+    timeout: 2s
+    retries: 0
+    max_repetitions: 10
+    metrics:
+    - name: systemStatus
+      oid: 1.3.6.1.4.1.6574.1.1
+      type: gauge
+      help: Synology system status Each meanings of status represented describe below
+        - 1.3.6.1.4.1.6574.1.1
+    - name: temperature
+      oid: 1.3.6.1.4.1.6574.1.2
+      type: gauge
+      help: Synology system temperature The temperature of Disk Station uses Celsius
+        degree. - 1.3.6.1.4.1.6574.1.2
+    - name: powerStatus
+      oid: 1.3.6.1.4.1.6574.1.3
+      type: gauge
+      help: Synology power status Each meanings of status represented describe below
+        - 1.3.6.1.4.1.6574.1.3
+    - name: systemFanStatus
+      oid: 1.3.6.1.4.1.6574.1.4.1
+      type: gauge
+      help: Synology system fan status Each meanings of status represented describe
+        below - 1.3.6.1.4.1.6574.1.4.1
+    - name: cpuFanStatus
+      oid: 1.3.6.1.4.1.6574.1.4.2
+      type: gauge
+      help: Synology cpu fan status Each meanings of status represented describe below
+        - 1.3.6.1.4.1.6574.1.4.2
+    - name: modelName
+      oid: 1.3.6.1.4.1.6574.1.5.1
+      type: DisplayString
+      help: The Model name of this NAS - 1.3.6.1.4.1.6574.1.5.1
+    - name: version
+      oid: 1.3.6.1.4.1.6574.1.5.3
+      type: DisplayString
+      help: The version of this DSM - 1.3.6.1.4.1.6574.1.5.3
+    - name: diskStatus
+      oid: 1.3.6.1.4.1.6574.2.1.1.5
+      type: gauge
+      help: Synology disk status Each meanings of status represented describe below
+        - 1.3.6.1.4.1.6574.2.1.1.5
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: diskTemperature
+      oid: 1.3.6.1.4.1.6574.2.1.1.6
+      type: gauge
+      help: Synology disk temperature The temperature of each disk uses Celsius degree.
+        - 1.3.6.1.4.1.6574.2.1.1.6
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: diskRole
+      oid: 1.3.6.1.4.1.6574.2.1.1.7
+      type: DisplayString
+      help: Synology disk role The role of the disk in system - 1.3.6.1.4.1.6574.2.1.1.7
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: diskRetry
+      oid: 1.3.6.1.4.1.6574.2.1.1.8
+      type: gauge
+      help: Synology disk retry count The count of each disk connection retries. -
+        1.3.6.1.4.1.6574.2.1.1.8
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: diskBadSector
+      oid: 1.3.6.1.4.1.6574.2.1.1.9
+      type: gauge
+      help: Synology disk bad sector count The count of each disk I/O bad sector.
+        - 1.3.6.1.4.1.6574.2.1.1.9
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: diskIdentifyFail
+      oid: 1.3.6.1.4.1.6574.2.1.1.10
+      type: gauge
+      help: Synology disk identify fail count The count of each disk identify fails.
+        - 1.3.6.1.4.1.6574.2.1.1.10
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: diskRemainLife
+      oid: 1.3.6.1.4.1.6574.2.1.1.11
+      type: gauge
+      help: Synology disk remainLife The estimate remain life of each disk. - 1.3.6.1.4.1.6574.2.1.1.11
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: diskHealthStatus
+      oid: 1.3.6.1.4.1.6574.2.1.1.13
+      type: gauge
+      help: Synology disk health status Each meanings of status represented describe
+        below - 1.3.6.1.4.1.6574.2.1.1.13
+      indexes:
+      - labelname: diskIndex
+        type: gauge
+      lookups:
+      - labels:
+        - diskIndex
+        labelname: diskID
+        oid: 1.3.6.1.4.1.6574.2.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: diskIndex
+    - name: raidStatus
+      oid: 1.3.6.1.4.1.6574.3.1.1.3
+      type: gauge
+      help: Synology Raid status Each meanings of status represented describe below
+        - 1.3.6.1.4.1.6574.3.1.1.3
+      indexes:
+      - labelname: raidIndex
+        type: gauge
+      lookups:
+      - labels:
+        - raidIndex
+        labelname: raidName
+        oid: 1.3.6.1.4.1.6574.3.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: raidIndex
+    - name: raidFreeSize
+      oid: 1.3.6.1.4.1.6574.3.1.1.4
+      type: gauge
+      help: Synology raid freesize Free space in bytes. - 1.3.6.1.4.1.6574.3.1.1.4
+      indexes:
+      - labelname: raidIndex
+        type: gauge
+      lookups:
+      - labels:
+        - raidIndex
+        labelname: raidName
+        oid: 1.3.6.1.4.1.6574.3.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: raidIndex
+    - name: raidTotalSize
+      oid: 1.3.6.1.4.1.6574.3.1.1.5
+      type: gauge
+      help: Synology raid totalsize Total space in bytes. - 1.3.6.1.4.1.6574.3.1.1.5
+      indexes:
+      - labelname: raidIndex
+        type: gauge
+      lookups:
+      - labels:
+        - raidIndex
+        labelname: raidName
+        oid: 1.3.6.1.4.1.6574.3.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: raidIndex
+    - name: raidHotspareCnt
+      oid: 1.3.6.1.4.1.6574.3.1.1.6
+      type: gauge
+      help: Synology raid hotspare Total hotspare disks count - 1.3.6.1.4.1.6574.3.1.1.6
+      indexes:
+      - labelname: raidIndex
+        type: gauge
+      lookups:
+      - labels:
+        - raidIndex
+        labelname: raidName
+        oid: 1.3.6.1.4.1.6574.3.1.1.2
+        type: DisplayString
+      - labels: []
+        labelname: raidIndex
+    - name: upsInfoStatus
+      oid: 1.3.6.1.4.1.6574.4.2.1
+      type: DisplayString
+      help: UPS status. - 1.3.6.1.4.1.6574.4.2.1
+    - name: upsInfoLoadValue
+      oid: 1.3.6.1.4.1.6574.4.2.12.1
+      type: Float
+      help: Load on UPS (percent) - 1.3.6.1.4.1.6574.4.2.12.1
+    - name: upsBatteryChargeValue
+      oid: 1.3.6.1.4.1.6574.4.3.1.1
+      type: Float
+      help: Battery charge - 1.3.6.1.4.1.6574.4.3.1.1
+    - name: upsBatteryRuntimeValue
+      oid: 1.3.6.1.4.1.6574.4.3.6.1
+      type: gauge
+      help: Battery runtime (seconds) - 1.3.6.1.4.1.6574.4.3.6.1
+    - name: diskSMARTAttrStatus
+      oid: 1.3.6.1.4.1.6574.5.1.1.9
+      type: DisplayString
+      help: SMART attribute status - 1.3.6.1.4.1.6574.5.1.1.9
+      indexes:
+      - labelname: diskSMARTInfoIndex
+        type: gauge
+    - name: hrStorageDescr
+      oid: 1.3.6.1.2.1.25.2.3.1.3
+      type: DisplayString
+      help: HOST-RESOURCES-MIB hrStorageDescr
+      indexes:
+      - labelname: hrStorageIndex
+        type: gauge
+      lookups:
+      - labels: [hrStorageIndex]
+        labelname: hrStorageDescr
+        oid: 1.3.6.1.2.1.25.2.3.1.3
+        type: DisplayString
+    - name: hrStorageAllocationUnits
+      oid: 1.3.6.1.2.1.25.2.3.1.4
+      type: gauge
+      help: HOST-RESOURCES-MIB hrStorageAllocationUnits
+      indexes:
+      - labelname: hrStorageIndex
+        type: gauge
+      lookups:
+      - labels: [hrStorageIndex]
+        labelname: hrStorageDescr
+        oid: 1.3.6.1.2.1.25.2.3.1.3
+        type: DisplayString
+    - name: hrStorageSize
+      oid: 1.3.6.1.2.1.25.2.3.1.5
+      type: gauge
+      help: HOST-RESOURCES-MIB hrStorageSize
+      indexes:
+      - labelname: hrStorageIndex
+        type: gauge
+      lookups:
+      - labels: [hrStorageIndex]
+        labelname: hrStorageDescr
+        oid: 1.3.6.1.2.1.25.2.3.1.3
+        type: DisplayString
+    - name: hrStorageUsed
+      oid: 1.3.6.1.2.1.25.2.3.1.6
+      type: gauge
+      help: HOST-RESOURCES-MIB hrStorageUsed
+      indexes:
+      - labelname: hrStorageIndex
+        type: gauge
+      lookups:
+      - labels: [hrStorageIndex]
+        labelname: hrStorageDescr
+        oid: 1.3.6.1.2.1.25.2.3.1.3
+        type: DisplayString
+    - name: thermalStatus
+      oid: 1.3.6.1.4.1.6574.1.8
+      type: gauge
+      help: Synology thermal status 1 normal 2 failed

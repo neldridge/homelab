@@ -1,0 +1,176 @@
+name: homelab-monitoring
+x-defaults: &defaults
+  restart: on-failure
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: '3'
+  security_opt: [no-new-privileges:true]
+  networks: [monitoring]
+services:
+  grafana:
+    <<: *defaults
+    image: grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572
+    ports: ['192.168.11.10:3000:3000']
+    environment:
+      GF_SERVER_PROTOCOL: https
+      GF_SERVER_HTTP_PORT: '3000'
+      GF_SERVER_DOMAIN: grafana.neldridge.net
+      GF_SERVER_ROOT_URL: https://grafana.neldridge.net:3000/
+      GF_SERVER_CERT_FILE: /etc/grafana/tls/fullchain.pem
+      GF_SERVER_CERT_KEY: /etc/grafana/tls/privkey.pem
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?required}
+      GF_SECURITY_SECRET_KEY: ${GRAFANA_SECRET_KEY:?required}
+      GF_METRICS_BASIC_AUTH_USERNAME: monitoring
+      GF_METRICS_BASIC_AUTH_PASSWORD: ${GRAFANA_SECRET_KEY:?required}
+      GF_SECURITY_COOKIE_SECURE: 'true'
+      GF_SECURITY_COOKIE_SAMESITE: strict
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_ANALYTICS_REPORTING_ENABLED: 'false'
+      GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: 'false'
+      GF_PLUGINS_PREINSTALL_DISABLED: 'true'
+      GF_SECURITY_DISABLE_GRAVATAR: 'true'
+      PUSHOVER_APP_TOKEN: ${PUSHOVER_APP_TOKEN:?required}
+      PUSHOVER_USER_KEY: ${PUSHOVER_USER_KEY:?required}
+      PAGERDUTY_ROUTING_KEY: ${PAGERDUTY_ROUTING_KEY:?required}
+      LOG_HEALTHCHECKS_PING_URL: ${LOG_HEALTHCHECKS_PING_URL:?required}
+      HEALTHCHECKS_PING_URL: ${HEALTHCHECKS_PING_URL:?required}
+    volumes:
+      - type: bind
+        source: /opt/data/homelab/monitoring/grafana
+        target: /var/lib/grafana
+        bind: {create_host_path: false}
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - type: bind
+        source: /opt/data/homelab/monitoring/tls
+        target: /etc/grafana/tls
+        read_only: true
+        bind: {create_host_path: false}
+  prometheus:
+    <<: *defaults
+    image: prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=14d
+      - --storage.tsdb.retention.size=10GB
+      - --web.enable-remote-write-receiver
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - type: bind
+        source: /opt/data/homelab/monitoring/prometheus
+        target: /prometheus
+        bind: {create_host_path: false}
+  alloy:
+    <<: *defaults
+    image: grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f
+    command: [run, --server.http.listen-addr=0.0.0.0:12345, --storage.path=/var/lib/alloy, /etc/alloy/config.alloy]
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy:ro
+      - type: bind
+        source: /opt/data/homelab/monitoring/alloy
+        target: /var/lib/alloy
+        bind: {create_host_path: false}
+      - /opt/data/homelab/monitoring/textfile:/monitoring/textfile:ro
+      - /opt/data/homelab/monitoring/logs:/monitoring/logs:ro
+      - /opt/data/homelab/monitoring/discovery:/monitoring/discovery:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /run/udev/data:/run/udev/data:ro
+      - type: bind
+        source: /
+        target: /rootfs
+        read_only: true
+        bind: {propagation: rslave, create_host_path: false}
+  loki:
+    <<: *defaults
+    image: grafana/loki:3.7.8@sha256:1107dd5274e0ada47e42472b7a7e71f3b2a2fe878878108f3e2f9e51528f0193
+    command: [-config.file=/etc/loki/config.yaml]
+    mem_limit: 1g
+    volumes:
+      - ./loki.yaml:/etc/loki/config.yaml:ro
+      - /opt/data/homelab/monitoring/loki:/loki
+  exportarr-sonarr:
+    <<: *defaults
+    image: ghcr.io/onedr0p/exportarr:v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520
+    command: [sonarr]
+    environment:
+      PORT: '9707'
+      URL: http://192.168.11.10:8989
+      APIKEY: ${SONARR_API_KEY:?required}
+      ENABLE_ADDITIONAL_METRICS: 'true'
+      ENABLE_UNKNOWN_QUEUE_ITEMS: 'true'
+    mem_limit: 128m
+  exportarr-radarr:
+    <<: *defaults
+    image: ghcr.io/onedr0p/exportarr:v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520
+    command: [radarr]
+    environment:
+      PORT: '9707'
+      URL: http://192.168.11.10:7878
+      APIKEY: ${RADARR_API_KEY:?required}
+      ENABLE_ADDITIONAL_METRICS: 'true'
+      ENABLE_UNKNOWN_QUEUE_ITEMS: 'true'
+    mem_limit: 128m
+  exportarr-prowlarr:
+    <<: *defaults
+    image: ghcr.io/onedr0p/exportarr:v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520
+    command: [prowlarr]
+    environment:
+      PORT: '9707'
+      URL: http://192.168.11.10:9696
+      APIKEY: ${PROWLARR_API_KEY:?required}
+      ENABLE_ADDITIONAL_METRICS: 'true'
+      ENABLE_UNKNOWN_QUEUE_ITEMS: 'true'
+    mem_limit: 128m
+  exportarr-bazarr:
+    <<: *defaults
+    image: ghcr.io/onedr0p/exportarr:v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520
+    command: [bazarr]
+    environment:
+      PORT: '9707'
+      URL: http://192.168.11.10:6767
+      APIKEY: ${BAZARR_API_KEY:?required}
+      ENABLE_ADDITIONAL_METRICS: 'false'
+      ENABLE_UNKNOWN_QUEUE_ITEMS: 'true'
+    mem_limit: 128m
+  blackbox:
+    <<: *defaults
+    image: prom/blackbox-exporter:v0.28.0@sha256:43027b43fb785b7c5adc53bd3b5dbc1a258270a2e8aff24f477b45c4e38dac68
+    command: [--config.file=/etc/blackbox/config.yml]
+    mem_limit: 128m
+    cpu_period: 100000
+    cpu_quota: 50000
+    pids_limit: 64
+    read_only: true
+    cap_drop: [ALL]
+    volumes:
+      - ./blackbox.yml:/etc/blackbox/config.yml:ro
+  snmp:
+    <<: *defaults
+    image: prom/snmp-exporter:v0.30.1@sha256:e5fd5e8b43ace6c088fe9bf0b37b7fff0e04380bee352be7ec41b853a4dd5859
+    command: [--config.file=/etc/snmp_exporter/snmp.yml, --snmp.module-concurrency=1]
+    user: '0:0'
+    mem_limit: 128m
+    cpu_period: 100000
+    cpu_quota: 50000
+    pids_limit: 32
+    read_only: true
+    cap_drop: [ALL]
+    volumes:
+      - type: bind
+        source: /opt/data/homelab/monitoring/snmp.yml
+        target: /etc/snmp_exporter/snmp.yml
+        read_only: true
+        bind: {create_host_path: false}
+networks:
+  monitoring:
+    driver: bridge

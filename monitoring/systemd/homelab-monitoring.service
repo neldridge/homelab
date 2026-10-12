@@ -1,0 +1,19 @@
+[Unit]
+Description=Independent homelab monitoring
+Requires=docker.service opt-data-homelab-monitoring-loki.mount
+Wants=network-online.target
+After=docker.service network-online.target opt-data-homelab-monitoring-loki.mount
+RequiresMountsFor=/opt/data
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/data/homelab/repo/monitoring
+ExecStartPre=/usr/bin/mountpoint -q /opt/data
+ExecStart=/usr/bin/docker compose --env-file /opt/data/homelab/monitoring/runtime.env -p homelab-monitoring -f compose.yaml up -d
+ExecStop=/usr/bin/docker compose --env-file /opt/data/homelab/monitoring/runtime.env -p homelab-monitoring -f compose.yaml stop
+TimeoutStartSec=300
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

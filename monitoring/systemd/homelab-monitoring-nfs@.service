@@ -1,0 +1,19 @@
+[Unit]
+Description=Isolated direct NFS read probe (%i)
+After=network.target
+RequiresMountsFor=/opt/data
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/monitoring/nfs_probe.py %i
+TimeoutStartSec=4
+TimeoutStopSec=1
+KillMode=control-group
+SendSIGKILL=yes
+UMask=0022
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/data/homelab/monitoring/nfs
+PrivateTmp=true
+MemoryMax=32M
+TasksMax=2

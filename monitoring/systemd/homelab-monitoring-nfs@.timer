@@ -1,0 +1,8 @@
+[Unit]
+Description=Schedule isolated NFS probe (%i)
+[Timer]
+OnBootSec=15
+OnCalendar=*-*-* *:*:00,30
+AccuracySec=1s
+[Install]
+WantedBy=timers.target

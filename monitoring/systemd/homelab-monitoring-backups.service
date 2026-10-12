@@ -1,0 +1,17 @@
+[Unit]
+Description=Validate scheduled local backup archives and SQLite copies
+RequiresMountsFor=/opt/data
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/monitoring/backup_checks.py
+TimeoutStartSec=90
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/data/homelab/monitoring/textfile /opt/data/homelab/monitoring/backup-checks
+MemoryMax=768M
+CPUQuota=50%
+Nice=15
+IOSchedulingClass=idle

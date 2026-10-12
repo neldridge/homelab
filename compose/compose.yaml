@@ -135,13 +135,18 @@ services:
         target: /books
         bind:
           create_host_path: false
-  overseerr:
-    image: docker.io/linuxserver/overseerr:v1.35.0-ls159@sha256:6108ed066d4a919c05251d9dab041c1e55e67ff7247e7b31be97b65ffcbaeeb1
+  seerr:
+    image: ghcr.io/seerr-team/seerr:v3.5.0@sha256:c33702abebcec295b69a1371417b3a350e31dfeacbae3158e790c86908dc3659
     restart: on-failure
+    init: true
     environment:
-      PUID: ${PUID}
-      PGID: ${PGID}
       TZ: ${TZ}
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1"]
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
     ports:
       - "5055:5055"
     logging:
@@ -151,8 +156,8 @@ services:
         max-file: "3"
     volumes:
       - type: bind
-        source: "${CONFIG_ROOT}/overseerr"
-        target: /config
+        source: "${CONFIG_ROOT}/seerr"
+        target: /app/config
         bind:
           create_host_path: false
   nzbget:

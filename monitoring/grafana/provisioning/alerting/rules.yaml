@@ -1,0 +1,3596 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "R710 baseline",
+      "folder": "Homelab",
+      "interval": "30s",
+      "rules": [
+        {
+          "uid": "host-missing",
+          "title": "HostMetricsMissing",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "R710 host metrics missing or stale",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "absent(up{job=\"r710-host\"}) or absent(node_time_seconds{job=\"r710-host\"}) or ((up{job=\"r710-host\"} == bool 0) + (time() - timestamp(node_time_seconds{job=\"r710-host\"}) > bool 60))",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "prometheus-stale",
+          "title": "PrometheusSelfScrapeStale",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "Prometheus self-scrape missing or stale",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "absent(up{job=\"prometheus\"}) or ((up{job=\"prometheus\"} == bool 0) + (time() - timestamp(up{job=\"prometheus\"}) > bool 45))",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "disk-space",
+          "title": "LocalDiskSpaceLow",
+          "condition": "B",
+          "for": "2m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "Local disk has less than 15% free",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(node_filesystem_avail_bytes{fstype=\"ext4\",job=\"r710-host\",mountpoint=~\"/|/opt/data\"} / node_filesystem_size_bytes{fstype=\"ext4\",job=\"r710-host\",mountpoint=~\"/|/opt/data\"}) < bool 0.15",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "disk-inodes",
+          "title": "LocalDiskInodesLow",
+          "condition": "B",
+          "for": "2m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "Local disk has less than 10% free inodes",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(node_filesystem_files_free{fstype=\"ext4\",job=\"r710-host\",mountpoint=~\"/|/opt/data\"} / node_filesystem_files{fstype=\"ext4\",job=\"r710-host\",mountpoint=~\"/|/opt/data\"}) < bool 0.10",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "cpu-high",
+          "title": "SustainedCPUHigh",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "R710 CPU usage above 90% for five minutes",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(1 - avg by (host)(rate(node_cpu_seconds_total{mode=\"idle\",job=\"r710-host\"}[2m]))) > bool 0.90",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "memory-high",
+          "title": "SustainedMemoryHigh",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "R710 memory usage above 90% for five minutes",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(1 - node_memory_MemAvailable_bytes{job=\"r710-host\"}/node_memory_MemTotal_bytes{job=\"r710-host\"}) > bool 0.90",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "load-high",
+          "title": "SustainedLoadHigh",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "R710 five-minute load exceeds 1.5 per CPU",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "node_load5{job=\"r710-host\"} / count by (host,instance,job)(node_cpu_seconds_total{mode=\"idle\",job=\"r710-host\"}) > bool 1.5",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "monitoring-heartbeat",
+          "title": "MonitoringHeartbeat",
+          "condition": "B",
+          "for": "0s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "heartbeat"
+          },
+          "annotations": {
+            "summary": "Monitoring heartbeat: Grafana evaluation and fresh Prometheus data",
+            "description": "Inspect the Homelab overview. Endpoint health and logs are not covered in phase 1.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "1"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(up{job=\"prometheus\"} == bool 1) * (time() - timestamp(up{job=\"prometheus\"}) < bool 45) * (time() - prometheus_tsdb_head_max_time{job=\"prometheus\"}/1000 < bool 60)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "orgId": 1,
+      "name": "R710 services and logs",
+      "folder": "Homelab",
+      "interval": "30s",
+      "rules": [
+        {
+          "uid": "service-api",
+          "title": "ApplicationAPIUnavailable",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "ApplicationAPIUnavailable",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 60s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_api_ok == bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "checks-stale",
+          "title": "SemanticCollectorStale",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SemanticCollectorStale",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 30s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "time() - homelab_checks_timestamp > bool 75",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "service-warning",
+          "title": "ApplicationHealthWarnings",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "ApplicationHealthWarnings",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 5m.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_warnings > bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "queue-failure",
+          "title": "DownloadOrImportFailed",
+          "condition": "B",
+          "for": "2m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "DownloadOrImportFailed",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 2m.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_queue_failures > bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "queue-stuck",
+          "title": "ImportPersistentlyStuck",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "ImportPersistentlyStuck",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 60s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_queue_stuck > bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "container-exit",
+          "title": "MediaContainerExited",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "MediaContainerExited",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 60s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_container_running == bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "container-restart",
+          "title": "MediaContainerRestarted",
+          "condition": "B",
+          "for": "0s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "MediaContainerRestarted",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 0s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "increase(homelab_container_restarts[5m]) > bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "container-oom",
+          "title": "MediaContainerOOM",
+          "condition": "B",
+          "for": "0s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "MediaContainerOOM",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 0s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_container_oom > bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "exportarr-down",
+          "title": "ExportarrUnavailable",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "ExportarrUnavailable",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 60s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "up{job=~\"exportarr-.*\"} == bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "loki-ready",
+          "title": "LokiUnavailable",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload",
+            "service": "monitoring-loki"
+          },
+          "annotations": {
+            "summary": "LokiUnavailable",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 30s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(up{job=\"loki\"} == bool 0) or (homelab_loki_ready == bool 0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "loki-canary",
+          "title": "LogIngestionMissing",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload",
+            "service": "canary"
+          },
+          "annotations": {
+            "summary": "LogIngestionMissing",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 30s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "loki",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "sum(count_over_time({service=\"canary\"} |= \"pipeline_canary\" [90s])) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "loki",
+                  "uid": "loki"
+                },
+                "queryType": "instant",
+                "editorMode": "code"
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "lt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "log-heartbeat",
+          "title": "LogPipelineHeartbeat",
+          "condition": "B",
+          "for": "0s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "log-heartbeat",
+            "service": "canary"
+          },
+          "annotations": {
+            "summary": "LogPipelineHeartbeat",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 0s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "loki",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "sum(count_over_time({service=\"canary\"} |= \"pipeline_canary\" [90s])) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "loki",
+                  "uid": "loki"
+                },
+                "queryType": "instant",
+                "editorMode": "code"
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "log-errors",
+          "title": "RecurringApplicationErrors",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "RecurringApplicationErrors",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 60s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "loki",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "sum by(service) (count_over_time({job=~\"docker|application\",service!~\"monitoring-.*|kometa\"} |~ \"(?i)(\\\\berror\\\\b|fatal|exception|out of memory)\" [5m])) > 5",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "loki",
+                  "uid": "loki"
+                },
+                "queryType": "instant",
+                "editorMode": "code"
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "canary-error",
+          "title": "SyntheticLogError",
+          "condition": "B",
+          "for": "0s",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload",
+            "service": "canary"
+          },
+          "annotations": {
+            "summary": "SyntheticLogError",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 0s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "loki",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "sum(count_over_time({service=\"canary\"} |= \"synthetic_monitoring_error\" [60s])) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "loki",
+                  "uid": "loki"
+                },
+                "queryType": "instant",
+                "editorMode": "code"
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "loki-write",
+          "title": "LogWriteFailures",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload",
+            "service": "monitoring-loki"
+          },
+          "annotations": {
+            "summary": "LogWriteFailures",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 30s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(sum(increase(loki_write_dropped_entries_total[2m])) > bool 0) or (sum(increase(loki_write_batch_retries_total[2m])) > bool 3)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "loki-disk",
+          "title": "LokiStorageLow",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload",
+            "service": "monitoring-loki"
+          },
+          "annotations": {
+            "summary": "Loki storage below 20% free",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 30s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_loki_disk_free_ratio < bool 0.20",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "container-events",
+          "title": "UnexpectedContainerEvent",
+          "condition": "B",
+          "for": "0s",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "Container exit, restart or OOM event",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 0s.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "increase(homelab_container_events_total[5m]) > bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "nzb-errors",
+          "title": "NZBGetRecurringErrors",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "NZBGet recurring errors in the last ten minutes",
+            "description": "Inspect service status and logs on the Homelab overview. API checks validate response semantics; quiet logs are allowed. Service: {{ $labels.service }}. Host: bb9b. Logs: https://grafana.neldridge.net:3000/d/homelab-overview?var-service={{ $labels.service }}&viewPanel=24 Persistence threshold: 5m.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "20",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_recent_errors > bool 2",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "orgId": 1,
+      "name": "R710 storage and dependencies",
+      "folder": "Homelab",
+      "interval": "30s",
+      "rules": [
+        {
+          "uid": "nfs-unavailable",
+          "title": "NFSUnavailable",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "NFSUnavailable",
+            "description": "Expected source/mount missing, direct read failed, or last direct read is older than 45 seconds. Inspect systemctl status homelab-monitoring-nfs@*.service; do not unmount active media. Persistence threshold: 30s. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(homelab_nfs_mount_ok == bool 0) or (homelab_nfs_read_ok == bool 0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "storage-stale",
+          "title": "StorageCollectorStale",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "StorageCollectorStale",
+            "description": "Storage observer is stale. It reads only local mountinfo and local probe result files. Persistence threshold: 30s. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "absent(homelab_storage_checks_timestamp) or (time() - homelab_storage_checks_timestamp > bool 75)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "dependency-unavailable",
+          "title": "DependencyUnavailable",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "DependencyUnavailable",
+            "description": "DNS resolution, verified certificate identity, TLS handshake or expected HTTP response failed. Inspect endpoint and blackbox probe logs. Persistence threshold: 60s. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(probe_success{job=~\"dependency-.*\"} == bool 0) or (up{job=~\"dependency-.*\"} == bool 0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "dns-unavailable",
+          "title": "DNSResolutionUnavailable",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "DNSResolutionUnavailable",
+            "description": "Both configured R710 DNS resolvers failed to return an A answer for this service name. Persistence threshold: 60s. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "max by(host,service) (probe_success{check=\"dns\"}) == bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "dns-collector",
+          "title": "DNSCollectorUnavailable",
+          "condition": "B",
+          "for": "60s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "DNSCollectorUnavailable",
+            "description": "DNS probe scrape failed; inspect the blackbox collector. Persistence threshold: 60s. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "up{check=\"dns\"} == bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "tls-expiry",
+          "title": "TLSCertificateExpiring",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "TLSCertificateExpiring",
+            "description": "Verified certificate chain expires within 21 days. Inspect homelab-certificates.service and the certificate renewal runbook; expiry is measured from the served chain. Persistence threshold: 5m. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(probe_ssl_earliest_cert_expiry{job=~\"dependency-.*\"} - time()) < bool 21*86400",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "backup-invalid",
+          "title": "BackupArchiveInvalid",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "BackupArchiveInvalid",
+            "description": "Latest scheduled archive unavailable or failed ZIP CRC, expected files, XML or SQLite quick_check. This is artifact integrity, not proof of restore or an off-host backup. Persistence threshold: 5m. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_backup_archive_valid == bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "backup-old",
+          "title": "BackupArtifactOverdue",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "BackupArtifactOverdue",
+            "description": "No verified scheduled archive within configured interval plus one day. Investigate application backup task and logs. Persistence threshold: 5m. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(time() - homelab_backup_artifact_timestamp) > bool homelab_backup_max_age_seconds",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "backup-stale",
+          "title": "BackupCollectorStale",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "BackupCollectorStale",
+            "description": "Backup archive validation has not completed within 20 minutes. Persistence threshold: 5m. Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=30 Service: {{ $labels.service }}. Host: bb9b.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "absent(homelab_backup_checks_timestamp) or (time() - homelab_backup_checks_timestamp > bool 1200)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "certificate-renewal-failed",
+          "title": "CertificateRenewalFailed",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "CertificateRenewalFailed",
+            "description": "Latest issuance, renewal or deployment failed. Inspect homelab-certificates.service; existing certificates are retained or restored. Host: bb9b. Runbook: certificates/README.md.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_certificate_renewal_success == bool 0",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "certificate-renewal-stale",
+          "title": "CertificateRenewalStale",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "CertificateRenewalStale",
+            "description": "No successful renewal/deployment reconciliation within 36 hours, or metrics missing. Check timer and DNS credentials. Host: bb9b. Runbook: certificates/README.md.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "30",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(time() - homelab_certificate_renewal_last_success_seconds > bool 36*3600) or absent(homelab_certificate_renewal_last_success_seconds)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "recovery-stage-unhealthy",
+          "title": "RecoveryStageUnhealthy",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "RecoveryStageUnhealthy",
+            "description": "Recovery stage {{ $labels.stage }} has unknown evidence, a failed last attempt, or no verified completion within 36 hours. Local bundle age does not establish NAS or B2 success. Cloud evidence must come from Hyper Backup. Review /opt/data/homelab/repo/backups/README.md on bb9b. Persistence threshold: 5m.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "60"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "max by (host, stage) (label_replace((homelab_recovery_known == bool 0), \"signal\", \"unknown\", \"stage\", \".*\") or label_replace((homelab_recovery_success == bool 0), \"signal\", \"failed\", \"stage\", \".*\") or label_replace(((time() - homelab_recovery_completed_timestamp) > bool 129600), \"signal\", \"overdue\", \"stage\", \".*\"))",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "orgId": 1,
+      "name": "Synology storage",
+      "folder": "Homelab",
+      "interval": "30s",
+      "rules": [
+        {
+          "uid": "synology-unavailable",
+          "title": "SynologyUnavailable",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "pelican",
+            "service": "synology",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SynologyUnavailable",
+            "description": "Authenticated SNMP collection unavailable or required system status missing. Check NAS reachability and exporter logs; do not disconnect NFS. Host: pelican. DSM: https://192.168.11.131:5001/ Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=35",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "35",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "max((up{job=\"synology\"} == bool 0) or absent(up{job=\"synology\"}) or absent(systemStatus{job=\"synology\"}))",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "synology-hardware",
+          "title": "SynologyHardwareFailure",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "pelican",
+            "service": "synology",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SynologyHardwareFailure",
+            "description": "System, fan, power, thermal or disk status is abnormal. Normal=1; disk health warning=2 critical=3 failing=4. Inspect DSM Storage Manager. Host: pelican. DSM: https://192.168.11.131:5001/ Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=35",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "35",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "label_replace({job=\"synology\",__name__=~\"systemStatus|powerStatus|systemFanStatus|cpuFanStatus|thermalStatus|diskHealthStatus|diskStatus\"}, \"signal\", \"$1\", \"__name__\", \"(.*)\") != bool 1",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "synology-raid",
+          "title": "SynologyRAIDFailure",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "pelican",
+            "service": "synology",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SynologyRAIDFailure",
+            "description": "RAID degraded=11, crashed/read-only=12, unknown=21. Background repair/scrubbing are displayed separately and do not page as failure. Host: pelican. DSM: https://192.168.11.131:5001/ Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=35",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "35",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(raidStatus{job=\"synology\"} == bool 11) + (raidStatus{job=\"synology\"} == bool 12) + (raidStatus{job=\"synology\"} == bool 21)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "synology-disks-missing",
+          "title": "SynologyExpectedStorageMissing",
+          "condition": "B",
+          "for": "30s",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "pelican",
+            "service": "synology",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SynologyExpectedStorageMissing",
+            "description": "Expected four disks, Storage Pool 2 and Volume 2. Missing rows require investigation; SNMP health alone does not establish completeness. Host: pelican. DSM: https://192.168.11.131:5001/ Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=35",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "35",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "((count(diskStatus{job=\"synology\"}) != bool 4) or absent(raidStatus{job=\"synology\",raidName=\"Volume 2\"}) or absent(raidStatus{job=\"synology\",raidName=\"Storage Pool 2\"})) * on() group_left() max(up{job=\"synology\"})",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "synology-capacity",
+          "title": "SynologyCapacityLow",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "pelican",
+            "service": "synology",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SynologyCapacityLow",
+            "description": "Volume 2 less than 15% free. Pool allocation is not filesystem capacity and is excluded. Host: pelican. DSM: https://192.168.11.131:5001/ Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=35 NAS root and connected USB filesystem also warn below 15% free.",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "35",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "raidFreeSize{job=\"synology\",raidName=\"Volume 2\"} / raidTotalSize{job=\"synology\",raidName=\"Volume 2\"} < bool 0.15 or ((hrStorageSize{job=\"synology\",hrStorageDescr=~\"/|/volumeUSB1/usbshare\"} - hrStorageUsed{job=\"synology\"}) / hrStorageSize{job=\"synology\"} < bool 0.15)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "synology-temperature",
+          "title": "SynologyTemperatureHigh",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "pelican",
+            "service": "synology",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SynologyTemperatureHigh",
+            "description": "Disk over 50 C or system over 75 C for five minutes. Inspect cooling and DSM thermal status. Host: pelican. DSM: https://192.168.11.131:5001/ Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=35",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "35",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(diskTemperature{job=\"synology\"} > bool 50) or (temperature{job=\"synology\"} > bool 75)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "synology-smart",
+          "title": "SynologySMARTWarning",
+          "condition": "B",
+          "for": "5m",
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "pelican",
+            "service": "synology",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "SynologySMARTWarning",
+            "description": "Non-OK SMART attribute or nonzero bad sectors. Remaining-life=-1 is unavailable and excluded. Host: pelican. DSM: https://192.168.11.131:5001/ Overview: https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=35",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "35",
+            "runbook_url": "https://grafana.neldridge.net:3000/d/homelab-overview"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(sum by(host,service) (diskSMARTAttrStatus{job=\"synology\",diskSMARTAttrStatus!=\"OK\"}) or (0 * max by(host,service) (up{job=\"synology\"}))) + (sum by(host,service) (diskBadSector{job=\"synology\"}) > bool 0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "prometheus"
+                }
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "orgId": 1,
+      "name": "Maintenance versions",
+      "folder": "Homelab",
+      "interval": "60s",
+      "rules": [
+        {
+          "uid": "stable-updates",
+          "title": "StableUpdatesAvailable",
+          "condition": "B",
+          "for": "2m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "maintenance"
+          },
+          "annotations": {
+            "summary": "Stable container/application updates available; review installed versus available versions",
+            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "40"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "homelab_version_update_available",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "versions-stale",
+          "title": "VersionDiscoveryStale",
+          "condition": "B",
+          "for": "2m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "maintenance"
+          },
+          "annotations": {
+            "summary": "Daily version discovery is older than 28 hours or missing",
+            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "40"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(time() - homelab_version_checked_timestamp > bool 100800) or absent(homelab_version_checked_timestamp)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "versions-lookup",
+          "title": "VersionLookupFailed",
+          "condition": "B",
+          "for": "2m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "maintenance"
+          },
+          "annotations": {
+            "summary": "Stable release lookup failed; available version is unknown",
+            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "40"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "1 - homelab_version_lookup_ok",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "versions-app",
+          "title": "ApplicationVersionUnknown",
+          "condition": "B",
+          "for": "2m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "maintenance"
+          },
+          "annotations": {
+            "summary": "Installed application version could not be read",
+            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "__dashboardUid__": "homelab-overview",
+            "__panelId__": "40"
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "1 - homelab_version_application_known",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "deleteRules": [
+    {
+      "orgId": 1,
+      "uid": "kometa-errors"
+    },
+    {
+      "orgId": 1,
+      "uid": "kometa-stale"
+    },
+    {
+      "orgId": 1,
+      "uid": "deprecated-overseerr"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Local 16 GiB bound for Loki storage
+RequiresMountsFor=/opt/data
+Before=homelab-monitoring.service
+[Mount]
+What=/opt/data/homelab/monitoring/loki.ext4
+Where=/opt/data/homelab/monitoring/loki
+Type=ext4
+Options=loop,nodev,nosuid,noexec
+[Install]
+WantedBy=multi-user.target

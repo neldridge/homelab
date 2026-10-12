@@ -1,0 +1,16 @@
+[Unit]
+Description=Bounded local monitoring semantic API and container checks
+Requires=docker.service
+After=docker.service
+RequiresMountsFor=/opt/data
+[Service]
+Type=oneshot
+Environment=TZ=America/New_York
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/monitoring/service_checks.py
+TimeoutStartSec=25
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/data/homelab/monitoring
+ProtectHome=true
+PrivateTmp=true

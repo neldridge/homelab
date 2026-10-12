@@ -1,0 +1,14 @@
+[Unit]
+Description=Observe bounded storage probe results without NFS access
+RequiresMountsFor=/opt/data
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/monitoring/storage_checks.py
+TimeoutStartSec=5
+UMask=0022
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/data/homelab/monitoring/textfile
+MemoryMax=32M
