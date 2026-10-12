@@ -1,0 +1,8 @@
+[Unit]
+Description=Run bounded monitoring checks every 30 seconds
+[Timer]
+OnBootSec=20
+OnUnitActiveSec=30
+AccuracySec=1
+[Install]
+WantedBy=timers.target

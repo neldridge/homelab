@@ -1,0 +1,1177 @@
+{
+  "uid": "homelab-overview",
+  "title": "R710 monitoring overview",
+  "schemaVersion": 39,
+  "version": 8,
+  "refresh": "15s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "tags": [
+    "homelab",
+    "phase-1"
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Collector availability",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "CPU usage",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (1-avg(rate(node_cpu_seconds_total{mode=\"idle\",job=\"r710-host\"}[2m])))",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "Memory usage",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100*(1-node_memory_MemAvailable_bytes{job=\"r710-host\"}/node_memory_MemTotal_bytes{job=\"r710-host\"})",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "title": "Load per CPU",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "node_load5{job=\"r710-host\"} / count by (host,instance,job)(node_cpu_seconds_total{mode=\"idle\",job=\"r710-host\"})",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "title": "Local disk free %",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100*node_filesystem_avail_bytes{fstype=\"ext4\",job=\"r710-host\"}/node_filesystem_size_bytes{fstype=\"ext4\",job=\"r710-host\"}",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "title": "Local inode free %",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100*node_filesystem_files_free{fstype=\"ext4\",job=\"r710-host\"}/node_filesystem_files{fstype=\"ext4\",job=\"r710-host\"}",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "title": "Prometheus data age (seconds)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "time()-timestamp(up{job=\"prometheus\"})",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "title": "Host data age (seconds)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "time()-timestamp(node_time_seconds{job=\"r710-host\"})",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "title": "Prometheus samples ingested/sec",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(prometheus_tsdb_head_samples_appended_total[2m])",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "title": "Disk read/write bytes/sec",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(node_disk_read_bytes_total[2m])+rate(node_disk_written_bytes_total[2m])",
+          "legendFormat": "{{host}} {{job}} {{mountpoint}} {{device}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 20,
+      "title": "Authenticated API health (1 = healthy)",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_api_ok",
+          "instant": true,
+          "range": false,
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Investigate service logs",
+              "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=${__field.labels.service}&viewPanel=24"
+            }
+          ],
+          "displayName": "${__field.labels.service}",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "Healthy",
+                  "color": "green"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 21,
+      "title": "Health warnings / blocked imports",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_warnings or homelab_queue_failures or homelab_queue_stuck",
+          "instant": true,
+          "range": false,
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Investigate service logs",
+              "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=${__field.labels.service}&viewPanel=24"
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 22,
+      "title": "Container running / restart / OOM",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_container_running or homelab_container_restarts or homelab_container_oom",
+          "instant": true,
+          "range": false,
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Investigate service logs",
+              "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=${__field.labels.service}&viewPanel=24"
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 23,
+      "title": "Kometa last completed run",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 64,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_kometa_completed_timestamp",
+          "instant": true,
+          "range": false,
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Investigate service logs",
+              "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=${__field.labels.service}&viewPanel=24"
+            }
+          ],
+          "unit": "dateTimeAsLocal"
+        },
+        "overrides": []
+      },
+      "description": "Kometa is review-only. Run summaries and errors do not page. Select kometa in the service filter to review its retained logs."
+    },
+    {
+      "id": 24,
+      "title": "Service logs",
+      "type": "logs",
+      "gridPos": {
+        "x": 0,
+        "y": 72,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "uid": "loki",
+        "type": "loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{host=\"bb9b\", service=~\"$service\"}",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Investigate service logs",
+              "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=${__field.labels.service}&viewPanel=24"
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 25,
+      "title": "Kometa last error-free completed run",
+      "type": "stat",
+      "gridPos": {
+        "x": 8,
+        "y": 64,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_kometa_success_timestamp",
+          "instant": true,
+          "range": false,
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Investigate service logs",
+              "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=${__field.labels.service}&viewPanel=24"
+            }
+          ],
+          "unit": "dateTimeAsLocal",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "No retained error-free run",
+                  "color": "orange"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "description": "Kometa is review-only. Run summaries and errors do not page. Select kometa in the service filter to review its retained logs."
+    },
+    {
+      "id": 26,
+      "title": "Kometa latest summary errors",
+      "type": "stat",
+      "gridPos": {
+        "x": 16,
+        "y": 64,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_kometa_summary_errors",
+          "instant": true,
+          "range": false,
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Investigate service logs",
+              "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=${__field.labels.service}&viewPanel=24"
+            }
+          ],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "description": "Kometa is review-only. Run summaries and errors do not page. Select kometa in the service filter to review its retained logs."
+    },
+    {
+      "id": 30,
+      "title": "NFS expected mount / direct read (1 = healthy)",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 80,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{__name__=~\"homelab_nfs_mount_ok|homelab_nfs_read_ok\"}",
+          "legendFormat": "{{service}} {{__name__}} {{resolver}}",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        }
+      ],
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 31,
+      "title": "DNS / verified TLS / endpoint health (1 = healthy)",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 88,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "probe_success{job=~\"dependency-.*|dns-.*\"}",
+          "legendFormat": "{{service}} {{__name__}} {{resolver}}",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        },
+        {
+          "title": "Dependency probe logs",
+          "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=monitoring-blackbox&viewPanel=24",
+          "targetBlank": true
+        }
+      ],
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 32,
+      "title": "Verified certificate chain days remaining",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 96,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(probe_ssl_earliest_cert_expiry - time()) / 86400",
+          "legendFormat": "{{service}} {{__name__}} {{resolver}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "d"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        },
+        {
+          "title": "Dependency probe logs",
+          "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=monitoring-blackbox&viewPanel=24",
+          "targetBlank": true
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Scheduled backup archive integrity (1 = valid; restore untested)",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 104,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_backup_archive_valid",
+          "legendFormat": "{{service}} {{__name__}} {{resolver}}",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        }
+      ],
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 34,
+      "title": "Scheduled backup artifact age (days)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 112,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(time() - homelab_backup_artifact_timestamp)/86400",
+          "legendFormat": "{{service}} {{__name__}} {{resolver}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "d"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Synology system, disk and RAID status (1 normal)",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 120,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=\"synology\",__name__=~\"systemStatus|powerStatus|systemFanStatus|cpuFanStatus|thermalStatus|diskHealthStatus|diskStatus|raidStatus\"}",
+          "legendFormat": "{{__name__}} {{diskID}} {{raidName}} {{hrStorageDescr}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        },
+        {
+          "title": "SNMP collector logs",
+          "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=monitoring-snmp&viewPanel=24",
+          "targetBlank": true
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "title": "Synology temperatures",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 128,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=\"synology\",__name__=~\"temperature|diskTemperature\"}",
+          "legendFormat": "{{__name__}} {{diskID}} {{raidName}} {{hrStorageDescr}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        },
+        {
+          "title": "SNMP collector logs",
+          "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=monitoring-snmp&viewPanel=24",
+          "targetBlank": true
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "title": "NAS volume and USB free capacity",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 136,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(hrStorageSize{job=\"synology\",hrStorageDescr=~\"/volume2|/volumeUSB1/usbshare\"} - hrStorageUsed{job=\"synology\"}) * hrStorageAllocationUnits{job=\"synology\"}",
+          "legendFormat": "{{__name__}} {{diskID}} {{raidName}} {{hrStorageDescr}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "links": [
+        {
+          "title": "NAS DSM / Storage Manager",
+          "url": "https://192.168.11.131:5001/",
+          "targetBlank": true
+        },
+        {
+          "title": "Alert rules and time-bounded silences",
+          "url": "https://grafana.neldridge.net:3000/alerting/list",
+          "targetBlank": true
+        },
+        {
+          "title": "SNMP collector logs",
+          "url": "https://grafana.neldridge.net:3000/d/homelab-overview?var-service=monitoring-snmp&viewPanel=24",
+          "targetBlank": true
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "title": "Installed images/application versions vs available stable releases (daily snapshot)",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 144,
+        "w": 24,
+        "h": 14
+      },
+      "description": "Daily read-only snapshot. Running digest is the local RepoDigest; image_id is the running platform config digest. Available digest is the registry index, compared via the matching platform config. Stable only, no automatic upgrades. unknown means lookup failed. Image tag is not the application version; source states API, run-log, HTTP header, build metric or immutable image label. Plex architecture unavailable via its current API. Seerr uses the official stable image and a separately migrated configuration; the untouched Overseerr configuration is retained for rollback.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_version_info",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true,
+              "job": true,
+              "instance": true,
+              "host": true
+            },
+            "indexByName": {
+              "service": 0,
+              "installed_version": 1,
+              "version_source": 2,
+              "installed_tag": 3,
+              "available_tag": 4,
+              "status": 5,
+              "channel": 6,
+              "architecture": 7,
+              "image": 8,
+              "running_digest": 9,
+              "image_id": 10,
+              "available_digest": 11,
+              "installed_channel": 6
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "service",
+            "desc": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 41,
+      "title": "Last daily version check",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 158,
+        "w": 8,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "homelab_version_checked_timestamp * 1000",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dateTimeAsLocal"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 42,
+      "title": "Version maintenance notes",
+      "type": "text",
+      "gridPos": {
+        "x": 8,
+        "y": 158,
+        "w": 16,
+        "h": 4
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Stable updates and lookup gaps use **informational PagerDuty** with recovery, grouped by alert name and host; reminders every seven days are not a weekly digest. Seerr migration is verified; Overseerr configuration and the private pre-migration archive remain available for rollback. No migration or upgrades are automated. Public Plex releases only; beta/channel and external server architecture remain unverified. Inspect snapshot time before acting."
+      }
+    },
+    {
+      "id": 60,
+      "title": "Recovery stage evidence (0 = unknown, 1 = verified success, -1 = failed)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 162,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(homelab_recovery_success * 2 - 1) * homelab_recovery_known",
+          "legendFormat": "{{stage}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 61,
+      "title": "Recovery stage completion age (unknown stages omitted)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 162,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "((time() - homelab_recovery_completed_timestamp) / 3600) and (homelab_recovery_known == 1)",
+          "legendFormat": "{{stage}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "h"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "title": "Alerts and time-bounded silences",
+      "url": "/alerting/list"
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "custom",
+        "query": "sonarr,radarr,prowlarr,bazarr,seerr,nzbget,tautulli,nginx,kometa,host,canary,monitoring-loki,monitoring-alloy,monitoring-grafana,monitoring-prometheus,monitoring-blackbox,monitoring-snmp",
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "multi": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Create consistent homelab recovery bundle and verify NAS publication
+After=network-online.target
+RequiresMountsFor=/opt/data
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/backups/run_daily.py
+TimeoutStartSec=70min
+TimeoutStopSec=10
+KillMode=control-group
+UMask=0077
+Nice=15
+IOSchedulingClass=idle

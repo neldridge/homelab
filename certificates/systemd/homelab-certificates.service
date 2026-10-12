@@ -1,0 +1,12 @@
+[Unit]
+Description=Renew and safely deploy homelab HTTPS certificates
+Wants=network-online.target
+After=network-online.target docker.service
+RequiresMountsFor=/opt/data
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/certificates/renew.py renew
+UMask=0077
+TimeoutStartSec=30min
+PrivateTmp=true
+NoNewPrivileges=true

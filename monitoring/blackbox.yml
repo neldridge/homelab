@@ -1,0 +1,211 @@
+{
+  "modules": {
+    "grafana": {
+      "prober": "http",
+      "timeout": "5s",
+      "http": {
+        "preferred_ip_protocol": "ip4",
+        "ip_protocol_fallback": false,
+        "fail_if_not_ssl": true,
+        "follow_redirects": false,
+        "body_size_limit": "64KB",
+        "fail_if_body_not_matches_regexp": [
+          "\"database\"\\s*:\\s*\"ok\""
+        ]
+      }
+    },
+    "seerr": {
+      "prober": "http",
+      "timeout": "5s",
+      "http": {
+        "preferred_ip_protocol": "ip4",
+        "ip_protocol_fallback": false,
+        "fail_if_not_ssl": true,
+        "follow_redirects": false,
+        "body_size_limit": "64KB",
+        "fail_if_body_not_matches_regexp": [
+          "\"version\"\\s*:\\s*\"[0-9]+\\."
+        ]
+      }
+    },
+    "dns-grafana.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "grafana.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-grafana.neldridge.net": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "grafana.neldridge.net",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-requests.neldridge.net": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "requests.neldridge.net",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-sonarr.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "sonarr.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-radarr.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "radarr.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-prowlarr.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "prowlarr.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-bazarr.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "bazarr.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-overseerr.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "overseerr.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-nzbget.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "nzbget.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "dns-tautulli.a3f.link": {
+      "prober": "dns",
+      "timeout": "3s",
+      "dns": {
+        "query_name": "tautulli.a3f.link",
+        "query_type": "A",
+        "preferred_ip_protocol": "ip4",
+        "valid_rcodes": [
+          "NOERROR"
+        ],
+        "validate_answer_rrs": {
+          "fail_if_none_matches_regexp": [
+            ".*\\sIN\\s+A\\s+[0-9.]+"
+          ]
+        }
+      }
+    },
+    "tls": {
+      "prober": "tcp",
+      "timeout": "5s",
+      "tcp": {
+        "preferred_ip_protocol": "ip4",
+        "ip_protocol_fallback": false,
+        "tls": true
+      }
+    }
+  }
+}

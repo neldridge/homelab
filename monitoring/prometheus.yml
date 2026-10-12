@@ -1,0 +1,334 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    host: bb9b
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['prometheus:9090']
+        labels:
+          host: bb9b
+  - job_name: alloy
+    static_configs:
+      - targets: ['alloy:12345']
+        labels:
+          host: bb9b
+  - job_name: loki
+    static_configs:
+      - targets: ['loki:3100']
+        labels: {host: bb9b}
+  - job_name: exportarr-sonarr
+    scrape_interval: 30s
+    scrape_timeout: 20s
+    static_configs:
+      - targets: ['exportarr-sonarr:9707']
+        labels: {host: bb9b, service: sonarr}
+  - job_name: exportarr-radarr
+    scrape_interval: 30s
+    scrape_timeout: 20s
+    static_configs:
+      - targets: ['exportarr-radarr:9707']
+        labels: {host: bb9b, service: radarr}
+  - job_name: exportarr-prowlarr
+    scrape_interval: 30s
+    scrape_timeout: 20s
+    static_configs:
+      - targets: ['exportarr-prowlarr:9707']
+        labels: {host: bb9b, service: prowlarr}
+  - job_name: exportarr-bazarr
+    scrape_interval: 60s
+    scrape_timeout: 50s
+    static_configs:
+      - targets: ['exportarr-bazarr:9707']
+        labels: {host: bb9b, service: bazarr}
+  - job_name: dependency-grafana-internal
+    scrape_interval: 30s
+    scrape_timeout: 7s
+    metrics_path: /probe
+    params:
+      module: [grafana]
+    static_configs:
+      - targets: ['https://grafana.a3f.link:3000/api/health']
+        labels: {host: bb9b, service: grafana-internal, check: https}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dependency-grafana-public
+    scrape_interval: 30s
+    scrape_timeout: 7s
+    metrics_path: /probe
+    params:
+      module: [grafana]
+    static_configs:
+      - targets: ['https://grafana.neldridge.net:3000/api/health']
+        labels: {host: bb9b, service: grafana-public, check: https}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dependency-seerr
+    scrape_interval: 30s
+    scrape_timeout: 7s
+    metrics_path: /probe
+    params:
+      module: [seerr]
+    static_configs:
+      - targets: ['https://overseerr.a3f.link/api/v1/status']
+        labels: {host: bb9b, service: seerr, check: https}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dependency-requests
+    scrape_interval: 30s
+    scrape_timeout: 7s
+    metrics_path: /probe
+    params:
+      module: [seerr]
+    static_configs:
+      - targets: ['https://requests.neldridge.net:3579/api/v1/status']
+        labels: {host: bb9b, service: requests, check: https}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-grafana.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-grafana.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: grafana.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: grafana.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-grafana.neldridge.net
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-grafana.neldridge.net]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: grafana.neldridge.net, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: grafana.neldridge.net
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-requests.neldridge.net
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-requests.neldridge.net]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: requests.neldridge.net, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: requests.neldridge.net
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-sonarr.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-sonarr.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: sonarr.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: sonarr.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-radarr.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-radarr.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: radarr.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: radarr.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-prowlarr.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-prowlarr.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: prowlarr.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: prowlarr.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-bazarr.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-bazarr.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: bazarr.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: bazarr.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-overseerr.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-overseerr.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: overseerr.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: overseerr.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-nzbget.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-nzbget.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: nzbget.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: nzbget.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dns-tautulli.a3f.link
+    scrape_interval: 30s
+    scrape_timeout: 5s
+    metrics_path: /probe
+    params:
+      module: [dns-tautulli.a3f.link]
+    static_configs:
+      - targets: ['8.8.8.8:53', '1.1.1.1:53']
+        labels: {host: bb9b, service: tautulli.a3f.link, check: dns}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: instance
+        replacement: tautulli.a3f.link
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: dependency-tls
+    scrape_interval: 60s
+    scrape_timeout: 7s
+    metrics_path: /probe
+    params:
+      module: [tls]
+    static_configs:
+      - targets: ['sonarr.a3f.link:443']
+        labels: {host: bb9b, service: sonarr, check: tls}
+      - targets: ['radarr.a3f.link:443']
+        labels: {host: bb9b, service: radarr, check: tls}
+      - targets: ['prowlarr.a3f.link:443']
+        labels: {host: bb9b, service: prowlarr, check: tls}
+      - targets: ['bazarr.a3f.link:443']
+        labels: {host: bb9b, service: bazarr, check: tls}
+      - targets: ['nzbget.a3f.link:443']
+        labels: {host: bb9b, service: nzbget, check: tls}
+      - targets: ['tautulli.a3f.link:443']
+        labels: {host: bb9b, service: tautulli, check: tls}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+  - job_name: synology
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    sample_limit: 500
+    metrics_path: /snmp
+    params:
+      auth: [synology_v3]
+      module: [synology]
+    static_configs:
+      - targets: ['192.168.11.131']
+        labels: {host: pelican, service: synology}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: __address__
+        replacement: snmp:9116
+    metric_relabel_configs:
+      - source_labels: [__name__, hrStorageDescr]
+        regex: 'hrStorage.*;(/volume2/.+|/dev/.+|/run|/sys/.+|/tmp.*)'
+        action: drop
