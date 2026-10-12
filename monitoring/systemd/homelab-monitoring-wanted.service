@@ -1,0 +1,16 @@
+[Unit]
+Description=Observe available missing Sonarr and Radarr items
+After=network-online.target
+RequiresMountsFor=/opt/data
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/data/homelab/repo/monitoring/wanted_checks.py
+TimeoutStartSec=120
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/data/homelab/monitoring
+ProtectHome=true
+PrivateTmp=true
+MemoryMax=128M
+CPUQuota=25%

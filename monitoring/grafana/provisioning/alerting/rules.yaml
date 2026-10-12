@@ -550,6 +550,138 @@
               }
             }
           ]
+        },
+        {
+          "uid": "wanted-overdue",
+          "title": "AvailableWantedOverdue",
+          "condition": "B",
+          "for": "1m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "AvailableWantedOverdue on {{ $labels.service }}",
+            "description": "Monitored released items have stayed missing and outside the download queue for 10 hours. Open https://radarr.a3f.link/wanted/missing or https://sonarr.a3f.link/wanted/missing to investigate. Movies require digital/physical release evidence; episodes must have aired. This is release eligibility, not proof of an acceptable indexer result. Collection runs every five minutes."
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(homelab_wanted_overdue and on(host,service) (homelab_wanted_ok == 1)) or on(host,service) (0 * homelab_wanted_ok)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "uid": "wanted-observer",
+          "title": "WantedObserverFailed",
+          "condition": "B",
+          "for": "1m",
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "isPaused": false,
+          "labels": {
+            "host": "bb9b",
+            "scope": "workload"
+          },
+          "annotations": {
+            "summary": "WantedObserverFailed on {{ $labels.service }}",
+            "description": "Available-wanted observation failed or is over 15 minutes stale. Inspect homelab-monitoring-wanted.service on bb9b; incomplete reads never clear the backlog as healthy."
+          },
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "prometheus",
+              "relativeTimeRange": {
+                "from": 120,
+                "to": 0
+              },
+              "model": {
+                "refId": "A",
+                "expr": "(homelab_wanted_ok == bool 0) + (time() - homelab_wanted_timestamp > bool 900) or absent(homelab_wanted_ok{service=\"sonarr\"}) or absent(homelab_wanted_ok{service=\"radarr\"})",
+                "instant": true,
+                "range": false,
+                "intervalMs": 15000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0.5
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    },
+                    "type": "query"
+                  }
+                ]
+              }
+            }
+          ]
         }
       ]
     },

@@ -1,0 +1,7 @@
+[Unit]
+Description=Check available wanted items every five minutes
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=5min
+[Install]
+WantedBy=timers.target
