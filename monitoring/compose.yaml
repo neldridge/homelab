@@ -144,7 +144,7 @@ services:
     mem_limit: 128m
   blackbox:
     <<: *defaults
-    image: prom/blackbox-exporter:v0.28.0@sha256:43027b43fb785b7c5adc53bd3b5dbc1a258270a2e8aff24f477b45c4e38dac68
+    image: prom/blackbox-exporter:v0.29.0@sha256:9613f2884689b6fad9f1939f6a3b0388c93a022cfaededb19545b329b5c83dea
     command: [--config.file=/etc/blackbox/config.yml]
     mem_limit: 128m
     cpu_period: 100000
