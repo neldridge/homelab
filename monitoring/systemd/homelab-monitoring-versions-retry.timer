@@ -1,0 +1,7 @@
+[Unit]
+Description=Recheck failed release lookups every fifteen minutes
+[Timer]
+OnCalendar=*:0/15
+Persistent=true
+[Install]
+WantedBy=timers.target

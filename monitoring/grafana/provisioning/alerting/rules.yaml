@@ -3585,7 +3585,7 @@
             "scope": "maintenance"
           },
           "annotations": {
-            "summary": "Stable release lookup failed; available version is unknown",
+            "summary": "Stable release lookup failed on three consecutive checks; available version is unknown",
             "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
             "__dashboardUid__": "homelab-overview",
             "__panelId__": "40"
@@ -3600,7 +3600,7 @@
               },
               "model": {
                 "refId": "A",
-                "expr": "1 - homelab_version_lookup_ok",
+                "expr": "homelab_version_lookup_failures >= bool 3",
                 "instant": true,
                 "range": false,
                 "intervalMs": 15000,

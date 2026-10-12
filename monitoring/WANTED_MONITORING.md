@@ -1,8 +1,8 @@
 # Available wanted backlog
 
 `wanted_checks.py` runs through `homelab-monitoring-wanted.timer` every five
-minutes, independently of the 25-second service-health check. Both applications
-are read-only. A monitored missing movie must have `isAvailable=true` and a past
+minutes, independently of the 25-second service-health check. The observer submits automatic search commands at 2 and 5 hours; other
+application access is read-only. A monitored missing movie must have `isAvailable=true` and a past
 digital or physical release date; announced/theatrical availability alone does
 not qualify. An episode and its series must be monitored, the episode must have
 a past UTC air date, and no file may exist. Items in the application's download
@@ -38,3 +38,21 @@ Twenty Python regression tests passed, including release/monitor gates, the
 10-hour boundary, queue/removal recovery, outage reset and pagination bounds.
 No synthetic PagerDuty incident or handset delivery test was performed for this
 addition. No application settings, downloads or media containers were changed.
+
+## Automatic search before paging (October 12, 2026)
+
+Each continuous eligible cycle submits a targeted `MoviesSearch` (Radarr) or
+`EpisodeSearch` (Sonarr) at 2 hours and again at 5 hours. Five-minute polling
+adds up to five minutes of scheduling delay. Commands follow existing quality,
+indexer and download settings and can initiate downloads. Queued or no-longer
+eligible items are excluded; queue entry/removal or a >15-minute observation gap
+starts a fresh cycle. The original 10-hour alert and recovery route remain.
+
+Attempts are saved before submission, including command IDs on acceptance.
+An ambiguous timeout is recorded as an error rather than automatically repeated;
+the later five-hour attempt still applies. State survives observer restarts.
+Commands batch at most 100 IDs per service/stage per poll. Delayed observers skip
+the two-hour attempt if already past five hours, and skip all catch-up searches
+for items already ten hours overdue (including existing backlog at deployment).
+No search is triggered merely by installing this change. Submission failures
+are exported as `homelab_wanted_search_failures`; the ten-hour page still applies.
