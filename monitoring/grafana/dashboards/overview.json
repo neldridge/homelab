@@ -456,7 +456,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "homelab_kometa_completed_timestamp",
+          "expr": "homelab_kometa_completed_timestamp * 1000",
           "instant": true,
           "range": false,
           "legendFormat": "{{service}}"
@@ -533,7 +533,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "homelab_kometa_success_timestamp",
+          "expr": "homelab_kometa_success_timestamp * 1000",
           "instant": true,
           "range": false,
           "legendFormat": "{{service}}"
