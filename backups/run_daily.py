@@ -6,7 +6,8 @@ ROOT=Path('/opt/data/homelab/backups')
 CODE=Path(__file__).resolve().parent
 os.umask(0o077)
 try:
-    # No deletion is authorized. Fail visibly rather than accumulate forever.
+    # Retain seven completed generations; clean disposable transfer readbacks.
+    subprocess.run(['/usr/bin/python3',str(CODE/'retention.py'),'--apply'],check=True,timeout=600)
     used=sum(p.stat().st_size for p in ROOT.rglob('*') if p.is_file() and not p.is_symlink())
     reserve=8*1024**3
     if used+reserve>64*1024**3 or shutil.disk_usage(ROOT).free<reserve:
@@ -24,3 +25,5 @@ except Exception:
     tmp=ROOT/'local-status.tmp';tmp.write_text(json.dumps(old)+'\n');tmp.replace(ROOT/'local-status.json')
     raise
 subprocess.run(['/usr/bin/python3',str(CODE/'publish_nas.py'),str(ROOT/status['id'])],check=True,timeout=2400)
+
+subprocess.run(['/usr/bin/python3',str(CODE/'retention.py'),'--apply'],check=True,timeout=600)

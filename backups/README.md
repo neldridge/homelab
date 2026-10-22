@@ -316,3 +316,168 @@ expiration until its effect on this mutable repository has been verified and
 approved. Backblaze's integration guide currently recommends the default
 keep-all setting; its general file-version documentation explains additional
 object-version storage: https://www.backblaze.com/docs/cloud-storage-file-versions
+
+## October 13: cloud notifications handled by DSM
+
+Cloud failure notifications are owned by Synology DSM Hyper Backup task
+`bb9b-configs-b2`. Task notifications are enabled, and the user confirms regular
+DSM email receipt. DSM reported Success, last successful backup October 13 at
+04:31 Eastern. The recovery alert was caused by the October 11 manual evidence
+record aging past 36 hours, not a verified cloud backup failure.
+
+`RecoveryStageUnhealthy` and overview panels 60/61 now select only `local` and
+`nas`; their five-minute persistence and 36-hour age threshold are unchanged.
+Cloud status files/metrics remain historical evidence, not live cloud monitoring.
+There is no automatic cloud observer and no recurring manual refresh requirement.
+This supersedes the earlier cloud-observer monitoring plan. Native failure emails
+do not independently detect a task that never runs. Cloud restore verification
+remains a separate unfinished requirement.
+
+Rollback: restore the previous alert/dashboard provisioning files and reload
+Grafana alert provisioning. This restores cloud-stage alert evaluation and its
+manual-evidence freshness requirement; it does not change the backup task.
+
+## October 22: Overseerr retirement and pre-upgrade backup
+
+The retired Overseerr config is no longer a required backup input. Its container,
+images and data were removed; Seerr remains required. Historical scope and
+rollback references above describe prior bundles, not current deployment inputs.
+A fresh independently verified local upgrade bundle is stored at
+`/opt/data/homelab/upgrade-backups/20261022-media-monitoring/20261022T213403Z`
+(3,698 files, eight SQLite databases, 1,614,593,250 file bytes). The one-off upgrade
+backup uses the same builder and verifier, with a separate output directory.
+Scheduled backup storage limits and retention remain unchanged; the scheduled
+job's storage-budget failure still needs retention work. No old backups were deleted.
+
+## Automatic retention (October 22, 2026)
+
+This policy supersedes earlier statements that scheduled backup pruning is disabled.
+`run_daily.py` invokes `retention.py --apply` before the storage guard and after
+successful NAS publication. Local retention keeps the newest seven complete,
+manifest-valid dated recovery bundles, plus any generation referenced by local/NAS
+status files. The newest recovery point must pass full hash/database verification
+before any deletion. Builder and transfer locks prevent pruning active work.
+
+Successful transfer scratch (tar files, NAS readbacks and extracted verification
+copies) is removed once the persisted NAS success covers that generation. Failed
+scratch is retained for two days after its newest file/directory modification,
+then removed after recovery verification. Only an exact successful NAS status
+generation permits immediate scratch deletion; older IDs alone do not prove success.
+Only date-named directories with known scratch entries qualify. Incomplete
+bundles, named migration/pre-upgrade/restore-test copies, credentials, source-inputs
+and the separate upgrade-backups directory are preserved. Named archives still
+require occasional manual review; the 64 GiB/8 GiB reserve guard remains enabled.
+
+After verifying the new published NAS archive by readback, the publisher keeps the
+newest seven `prior/before-TIMESTAMP.tar` archives and removes older matching files.
+The timestamp indicates replacement time. Exact dated incomplete staging uploads
+older than two days are removed at that point, provided the SMB modification
+time is also at least two days old. A recent retry resets that grace period.
+SMB listings use UTC and the C locale; unparseable timestamps are preserved.
+`published/recovery.tar`, unrelated
+NAS files (including B2 restore work), Hyper Backup repository data and cloud
+rotation are untouched. The existing daily 03:00 timer runs this policy; no second
+scheduler is needed. Preview local decisions with `sudo python3
+/opt/data/homelab/repo/backups/retention.py` (no `--apply`). Add `--nas` to preview
+NAS retention: it downloads the current published archive to a private temporary
+folder, checks its persisted checksum, extracts it, and verifies the entire bundle
+before producing a plan. This preview needs approximately twice the archive size
+in temporary local space. Add `--apply` only to execute the reviewed plan.
+Local/NAS standalone cleanup and publication acquire both builder and transfer
+locks without waiting. Unsafe lock files, symlinks, special files, cross-device
+entries and unexpected scratch names fail closed or are excluded. Local dry runs
+leave recovery data unchanged; they can create empty lock files. NAS previews
+create and remove only their private verification workspace.
+
+Rollback: disable the existing timer with `sudo systemctl disable --now
+homelab-recovery.timer` and wait for any running service to finish. To disable all
+retention integration, restore `run_daily.before-retention.py` and
+`publish_nas.before-retention.py` from `/opt/data/homelab/monitoring/` to their
+corresponding names under `/opt/data/homelab/repo/backups/`. These private copies
+were confirmed present. The exact scripts preceding this safety revision are in
+`/opt/data/homelab/monitoring/retention-rollback-20261022T214910Z/`; restoring those
+returns to the earlier retention implementation, rather than disabling it.
+Review the preserved storage guard before re-enabling the same timer. No daemon
+reload is needed for Python-only changes. Removed scratch and expired generations
+cannot be recovered by rolling back code; use a retained verified local/NAS
+bundle for recovery. Never overwrite the current bundle or cloud repository while
+restoring. Cloud recovery still requires a separate real restore test.
+
+Earlier deployment evidence (before this safety revision): the daily service completed successfully on October 22 at
+17:45 Eastern. Backup usage fell from approximately 58 GiB to 23 GiB, including
+the fresh generation `20261022T214310Z`. Its 3,701 files/eight databases passed
+local verification and NAS readback verification; the current published archive
+is 1,623,992,320 bytes. Seven local generations remain and transfer scratch is
+empty. Local/NAS recovery metrics both report success. The existing timer's next
+run is October 23 at 03:00 Eastern. The earlier seven backup/retention tests passed, including
+lock protection, dry-run behavior, pinned generations, verification failure,
+symlink/unknown-content rejection and exact NAS filename filtering.
+
+Backup logs use the existing systemd journal (`journalctl -u
+homelab-recovery.service`), not standalone files. On October 22, journald reported
+an effective 4 GiB persistent journal limit and approximately 3.9 GiB usage.
+Forwarded syslog files already have an enabled logrotate timer and weekly rotation
+with four archives, compression and delayed compression. No additional logrotate
+rule or backup scheduler was introduced.
+
+### Safety revision acceptance, October 22 at 17:54 Eastern
+
+All 12 backup tests passed locally and on bb9b. Coverage includes seven-generation
+boundaries, local and NAS status pins, exact successful scratch matching, the
+two-day idle boundary, verification failure before local/NAS deletion, both locks,
+lock-file/nested symlinks, unknown scratch, recent NAS retries and dry runs.
+The live local and NAS previews showed no eligible deletions; both apply passes
+confirmed that plan. The existing daily service then completed successfully from
+17:51:56 to 17:54:31, exercising post-publication rotation on a fresh generation.
+
+Fresh bundle `20261022T215206Z`: 3,705 files, eight SQLite databases,
+1,615,324,657 manifest file bytes. Local verification, extracted NAS readback full
+verification, and final published-path SHA-256 verification passed. The current
+published tar is 1,624,053,760 bytes with SHA-256
+`e79194529b967544250bc94c979e30bf97835660bbc47804300cdcdf2f8b8c11`.
+
+The cleanup measured **8,032,413,484 local file bytes reclaimed (7.48 GiB)**:
+1,543,485,937 bytes from expired `20261011T235000Z` and 6,488,927,547 bytes from
+the successful fresh transfer workspace. Scratch is empty. These are removed
+logical file bytes, not a net before/after disk-space decrease: a fresh bundle
+was created during acceptance. `du -sb` on the backup root changed from
+23,537,447,511 to 23,610,727,841 bytes, a net increase of 73,280,330 bytes as the
+newest bundle replaced the older smaller one. Earlier approximately 58-to-23 GiB
+cleanup is historical evidence above and is not included in this measured total.
+No NAS deletion was needed: six prior archives became seven after publication.
+
+Retained complete local generations:
+
+```text
+20261012T070001Z
+20261013T070001Z
+20261014T070002Z
+20261015T070002Z
+20261016T070003Z
+20261022T214310Z
+20261022T215206Z
+```
+
+Retained NAS prior filenames use replacement timestamps (not archive bundle IDs):
+
+```text
+before-20261012T070001Z.tar
+before-20261013T070001Z.tar
+before-20261014T070002Z.tar
+before-20261015T070002Z.tar
+before-20261016T070003Z.tar
+before-20261022T214310Z.tar
+before-20261022T215206Z.tar
+```
+
+The `.partial-20261011T234531Z` local bundle, named migration/upgrade/restore-test
+copies, credentials and unrelated directories remain preserved. No cloud
+repository was accessed or modified by this work; cloud recovery remains unverified.
+The existing enabled daily timer still schedules October 23 at 03:00
+America/New_York, with its 70-minute service deadline and no catch-up run.
+
+The existing backup metrics collector completed successfully after acceptance.
+Local and NAS `known` and `success` metrics are all 1, with completion timestamps
+matching this fresh run. Historical cloud metrics were left untouched and provide
+no new evidence of cloud recovery. Existing alert rules and notification routing
+were preserved.
