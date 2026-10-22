@@ -62,15 +62,23 @@ image content.
 
 | Service | Release tag |
 | --- | --- |
-| Sonarr | `4.0.20.3014-ls327` |
+| Sonarr | `4.0.20.3014-ls328` |
 | Radarr | `6.4.4.10685-ls319` |
 | Prowlarr | `2.6.5.5623-ls163` |
-| Bazarr | `v1.6.2-ls367` |
+| Bazarr | `v1.6.2-ls368` |
 | Seerr (official, linux/amd64) | `v3.5.0` |
 | NZBGet | `v26.3-ls267` |
-| Kometa | `v2.5.2-ls122` |
+| Kometa | `v2.5.3-ls123` |
 | Tautulli | `v2.18.2-ls247` |
 | Nginx (stable) | `1.30.5-alpine` |
+
+Sonarr and Kometa pins were updated and deployed October 13, 2026 to `4.0.20.3014-ls328`
+and `v2.5.3-ls123`, respectively. Sonarr is a container rebuild with the same
+application version; Kometa updates the application to 2.5.3.
+
+Bazarr was updated and deployed October 13, 2026 to `v1.6.2-ls368` (application
+version remains 1.6.2). Its stopped-service config backup is under
+`/opt/data/homelab/upgrade-backups/20261014T010152Z-grafana-bazarr/`.
 
 Seerr uses the official image, `init: true`, UID/GID 1000:1000 and `/app/config`.
 Its data lives in `/opt/data/homelab/config/seerr`; the original Overseerr
@@ -129,3 +137,32 @@ cd /opt/data/homelab/repo
 git fetch origin main
 git switch --track origin/main
 ```
+
+Bazarr `v1.6.2-ls368` and Grafana `13.2.4` pins are prepared locally;
+deployment is pending approval. The Bazarr table above reflects the deployed build.
+
+## October 22, 2026 stable updates
+
+Updated media image pins: Sonarr `4.0.20.3014-ls329`, Radarr
+`6.4.4.10685-ls323`, Prowlarr `2.6.5.5623-ls165`, Bazarr `v1.6.2-ls369`,
+Tautulli `v2.18.2-ls248`, NZBGet `v26.3-ls268`, Seerr `v3.5.1` and Nginx
+`1.30.6-alpine`. Monitoring patch pins: Prometheus `v3.15.1`, Loki `3.7.9`,
+Blackbox Exporter `v0.29.1`. All pins include verified registry index digests.
+Alloy `v1.21.1`, Grafana `13.2.4`, Kometa `v2.5.3-ls123`, SNMP Exporter
+`v0.30.1` and Exportarr `v2.3.0` were already current and were not restarted.
+Plex and Minecraft were explicitly excluded.
+
+Pre-upgrade recovery bundle:
+`/opt/data/homelab/upgrade-backups/20261022-media-monitoring/20261022T213403Z`.
+Independent verification passed for 3,698 files, eight SQLite databases and
+1,614,593,250 file bytes. It includes previous Compose definitions and private
+application/monitoring config snapshots, with exclusions described in backups/README.md.
+This is a verified local backup, not proof of NAS/cloud publication or a restore test.
+Old images remain available for rollback. Stop the affected service before
+restoring its database/config with manifest ownership/modes and the previous
+Compose pin; an image downgrade alone is insufficient if a database migrated.
+
+Authenticated application checks passed after startup, including Seerr request
+routing. Prometheus/Loki readiness, Grafana health, all scrape targets and fresh
+Loki canary entries passed. The refreshed inventory reports all 19 scoped
+containers current with no lookup failures. Both heartbeat rules remain healthy.

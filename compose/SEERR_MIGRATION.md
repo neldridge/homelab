@@ -1,3 +1,10 @@
+> October 22, 2026: Overseerr has been retired. Its container, unused images,
+> and original `/opt/data/homelab/config/overseerr` directory were removed after
+> confirming Seerr uses `/opt/data/homelab/config/seerr`. The rollback location
+> described below is no longer present on the server; these historical rollback
+> instructions must not be used as a current recovery procedure. The existing
+> `overseerr.a3f.link` hostname continues to serve Seerr.
+
 # Overseerr to Seerr migration — bb9b, October 11, 2026
 
 Installed official `ghcr.io/seerr-team/seerr:v3.5.0`, pinned to its **linux/amd64

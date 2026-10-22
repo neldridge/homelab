@@ -11,7 +11,7 @@ x-defaults: &defaults
 services:
   grafana:
     <<: *defaults
-    image: grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572
+    image: grafana/grafana:13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f
     ports: ['192.168.11.10:3000:3000']
     environment:
       GF_SERVER_PROTOCOL: https
@@ -53,7 +53,7 @@ services:
         bind: {create_host_path: false}
   prometheus:
     <<: *defaults
-    image: prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e
+    image: prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
@@ -68,7 +68,7 @@ services:
         bind: {create_host_path: false}
   alloy:
     <<: *defaults
-    image: grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f
+    image: grafana/alloy:v1.21.1@sha256:4039c971193053a84e53dd9ed3e7d4561c069256b024631cd3498a353ed7ece8
     command: [run, --server.http.listen-addr=0.0.0.0:12345, --storage.path=/var/lib/alloy, /etc/alloy/config.alloy]
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy:ro
@@ -92,7 +92,7 @@ services:
         bind: {propagation: rslave, create_host_path: false}
   loki:
     <<: *defaults
-    image: grafana/loki:3.7.8@sha256:1107dd5274e0ada47e42472b7a7e71f3b2a2fe878878108f3e2f9e51528f0193
+    image: grafana/loki:3.7.9@sha256:0db216b630ae1f348a1584c67f3cead8b4c1fc839169a39501db664744158e28
     command: [-config.file=/etc/loki/config.yaml]
     mem_limit: 1g
     volumes:
@@ -144,7 +144,7 @@ services:
     mem_limit: 128m
   blackbox:
     <<: *defaults
-    image: prom/blackbox-exporter:v0.29.0@sha256:9613f2884689b6fad9f1939f6a3b0388c93a022cfaededb19545b329b5c83dea
+    image: prom/blackbox-exporter:v0.29.1@sha256:ea1c7aa3ef3f307cd03e85f34abb604478ccb90b567fc690da0cd9776da76b13
     command: [--config.file=/etc/blackbox/config.yml]
     mem_limit: 128m
     cpu_period: 100000

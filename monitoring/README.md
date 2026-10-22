@@ -1,5 +1,9 @@
 # R710 monitoring operations
 
+Grafana was updated and deployed October 13, 2026 to `13.2.4`. The stopped-service
+data backup is under `/opt/data/homelab/upgrade-backups/20261014T010152Z-grafana-bazarr/`.
+Database health and genuine external heartbeats were verified after deployment.
+
 Independent Compose project: `homelab-monitoring`. Run on bb9b from
 `/opt/data/homelab/repo/monitoring` using the explicit private runtime file:
 
@@ -771,3 +775,96 @@ the counter to zero and publishes healthy metrics so Grafana automatically
 sends the existing PagerDuty resolve event. State and failure streaks persist in
 versions.json. HTTP status codes are retained; response bodies and URLs are not.
 Install/enable both new recovery units alongside the existing daily timer.
+
+### Major/minor update notifications (October 14, 2026)
+
+`StableUpdatesAvailable` now uses `homelab_version_major_minor_update_available`.
+Only a higher major or minor version triggers this maintenance notification.
+Patch releases, fourth-component revisions and LinuxServer image rebuilds remain
+visible in the inventory and existing `homelab_version_update_available` metric.
+The snapshot records `update_level`; mutable tags use the observed application
+version for classification. Unreadable versions cannot establish a major/minor
+update; existing unknown-version and failed-lookup alerts still apply. This is a
+release-number policy, not security-advisory detection: a critical security fix
+shipped as a patch will not trigger the update notification.
+
+Automatic upgrades remain disabled. Daily recovery bundles and cloud retention
+exist, but local/NAS staging still has no pruning policy and the storage guard
+can halt new backups. Before enabling unattended minor upgrades, implement
+bounded retention, require a fresh verified pre-upgrade backup and successful
+NAS publication, and provide per-service health checks and rollback. Major
+upgrades continue to require review.
+
+Deployed to bb9b October 14, 2026. The collector completed successfully and
+emitted 20 major/minor metric series; all were zero at verification. Grafana
+restarted and logged successful alert provisioning. Rollback copies of the
+collector and alert rules are under
+`/opt/data/homelab/monitoring/version-policy-backup-1791973678/`.
+Local release-policy/registry tests passed (four tests).
+
+## Maintenance repair (October 22, 2026)
+
+Alloy is pinned to v1.21.1, index digest
+`sha256:4039c971193053a84e53dd9ed3e7d4561c069256b024631cd3498a353ed7ece8`.
+Its configuration passed the new binary's validator before recreation. The prior
+Compose definition is retained privately as
+`/opt/data/homelab/monitoring/compose.before-alloy-1.21.1.yaml`.
+
+Kometa's frequent develop/nightly tags displaced stable tags from the bounded
+Docker Hub window. When that window contains no stable candidate, the collector
+now reads Kometa's official latest stable GitHub release and searches up to two
+Hub pages filtered to that numeric version. Architecture-prefixed and prerelease
+tags remain excluded; registry architecture/config identity checks remain required.
+The fallback has regression coverage. Nginx's unknown application version was
+caused by the request backend outage; its version endpoint works after Seerr recovery.
+
+## October 22, 2026 stable updates
+
+Updated media image pins: Sonarr `4.0.20.3014-ls329`, Radarr
+`6.4.4.10685-ls323`, Prowlarr `2.6.5.5623-ls165`, Bazarr `v1.6.2-ls369`,
+Tautulli `v2.18.2-ls248`, NZBGet `v26.3-ls268`, Seerr `v3.5.1` and Nginx
+`1.30.6-alpine`. Monitoring patch pins: Prometheus `v3.15.1`, Loki `3.7.9`,
+Blackbox Exporter `v0.29.1`. All pins include verified registry index digests.
+Alloy `v1.21.1`, Grafana `13.2.4`, Kometa `v2.5.3-ls123`, SNMP Exporter
+`v0.30.1` and Exportarr `v2.3.0` were already current and were not restarted.
+Plex and Minecraft were explicitly excluded.
+
+Pre-upgrade recovery bundle:
+`/opt/data/homelab/upgrade-backups/20261022-media-monitoring/20261022T213403Z`.
+Independent verification passed for 3,698 files, eight SQLite databases and
+1,614,593,250 file bytes. It includes previous Compose definitions and private
+application/monitoring config snapshots, with exclusions described in backups/README.md.
+This is a verified local backup, not proof of NAS/cloud publication or a restore test.
+Old images remain available for rollback. Stop the affected service before
+restoring its database/config with manifest ownership/modes and the previous
+Compose pin; an image downgrade alone is insufficient if a database migrated.
+
+Authenticated application checks passed after startup, including Seerr request
+routing. Prometheus/Loki readiness, Grafana health, all scrape targets and fresh
+Loki canary entries passed. The refreshed inventory reports all 19 scoped
+containers current with no lookup failures. Both heartbeat rules remain healthy.
+
+## Certificate and logrotate recovery (October 22, 2026)
+
+After restoring Seerr, homelab-certificates.service completed successfully at
+17:50 Eastern. The runner includes request-backend health checks; it had failed
+during the backend outage. A separate `renew.py verify` passed certificate/key,
+SAN, chain, lifetime, served-certificate and endpoint checks for all three sets.
+No forced certificate issuance or renewal-code changes were required.
+
+Both installed Ubuntu packages cloud-init and cloud-init-base supplied identical
+logrotate rules. Keep `/etc/logrotate.d/cloud-init-base` active. A local package
+file diversion moves `/etc/logrotate.d/cloud-init` to
+`/etc/logrotate.disabled/cloud-init`, preventing duplicate rules across package
+updates. Full logrotate debug validation and the real systemd job succeeded;
+no failed systemd units remained. Reapply on host recovery with:
+
+```sh
+sudo install -d -m 0755 /etc/logrotate.disabled
+sudo dpkg-divert --local --add --rename --divert /etc/logrotate.disabled/cloud-init /etc/logrotate.d/cloud-init
+```
+
+To undo, first ensure duplicate rules will not be active, then use
+`sudo dpkg-divert --local --rename --remove /etc/logrotate.d/cloud-init`.
+The active homelab backup scope does not capture package diversion metadata;
+these commands document the host-recovery requirement.

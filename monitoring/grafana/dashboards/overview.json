@@ -1085,7 +1085,7 @@
     },
     {
       "id": 60,
-      "title": "Recovery stage evidence (0 = unknown, 1 = verified success, -1 = failed)",
+      "title": "Local / NAS recovery stage evidence (0 = unknown, 1 = verified success, -1 = failed)",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -1100,7 +1100,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(homelab_recovery_success * 2 - 1) * homelab_recovery_known",
+          "expr": "(homelab_recovery_success{stage=~\"local|nas\"} * 2 - 1) * homelab_recovery_known{stage=~\"local|nas\"}",
           "legendFormat": "{{stage}}"
         }
       ],
@@ -1115,11 +1115,12 @@
           "displayMode": "list",
           "placement": "bottom"
         }
-      }
+      },
+      "description": "Local creation and verified NAS publication are monitored here. Cloud backups are monitored by Synology DSM Hyper Backup notifications; no automatic cloud status collection is configured."
     },
     {
       "id": 61,
-      "title": "Recovery stage completion age (unknown stages omitted)",
+      "title": "Local / NAS recovery stage completion age (unknown stages omitted)",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -1134,7 +1135,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "((time() - homelab_recovery_completed_timestamp) / 3600) and (homelab_recovery_known == 1)",
+          "expr": "((time() - homelab_recovery_completed_timestamp{stage=~\"local|nas\"}) / 3600) and (homelab_recovery_known{stage=~\"local|nas\"} == 1)",
           "legendFormat": "{{stage}}"
         }
       ],
@@ -1149,7 +1150,8 @@
           "displayMode": "list",
           "placement": "bottom"
         }
-      }
+      },
+      "description": "Local creation and verified NAS publication are monitored here. Cloud backups are monitored by Synology DSM Hyper Backup notifications; no automatic cloud status collection is configured."
     }
   ],
   "links": [

@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import quote
 BASE = Path('/opt/data/homelab')
 OUT = BASE / 'backups'
-APPS = ('sonarr','radarr','prowlarr','bazarr','seerr','tautulli','nzbget','plexmetamanager','overseerr','htpcmanager','muximux')
+APPS = ('sonarr','radarr','prowlarr','bazarr','seerr','tautulli','nzbget','plexmetamanager','htpcmanager','muximux')
 SKIP_DIRS = {'logs','log','cache','.cache','.yarn','lost+found','Backups','backups','backup','Sentry','MediaCover','broken','restore'}
 SKIP_FILES = {'logs.db','config.cache','new.db','broken.db','corrupt_prowlarr.db','sonarr-recovered.db','dump.sql','dump.err','schema.sql','sonarr-recovery.sql','sonarr-recovery-fixed.sql'}
 

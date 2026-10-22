@@ -1,7 +1,7 @@
 name: homelab
 services:
   sonarr:
-    image: lscr.io/linuxserver/sonarr:4.0.20.3014-ls327@sha256:dffc730adcb8b4f4342792fbb27fcad9c62fb8660523f2aeb082416980d7fe0c
+    image: lscr.io/linuxserver/sonarr:4.0.20.3014-ls329@sha256:44b06045a98bc1f237b9ffefc4b28dab64cb29305e4a2a94875ae93b5224e4cc
     restart: on-failure
     environment:
       PUID: ${PUID}
@@ -41,7 +41,7 @@ services:
         bind:
           create_host_path: false
   radarr:
-    image: lscr.io/linuxserver/radarr:6.4.4.10685-ls320@sha256:cfbc4fa09dc9d78f7cedc898f4ec48c6277cacedc523c4e159db6ff1c741959c
+    image: lscr.io/linuxserver/radarr:6.4.4.10685-ls323@sha256:fc0ae3c50f8128b97e84381903ec8d6845c3a569641cb7117c124376cccb57c1
     restart: on-failure
     environment:
       PUID: ${PUID}
@@ -81,7 +81,7 @@ services:
         bind:
           create_host_path: false
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:2.6.5.5623-ls163@sha256:f9151e5bc1025c6d0a630d503210cdcb6bb55a7cc098562609d96a408d838902
+    image: lscr.io/linuxserver/prowlarr:2.6.5.5623-ls165@sha256:b3b00047ed20f6ce2b16780145cb6a0acb51c9e28ea6aa6f5dcd33c7034f1797
     restart: on-failure
     environment:
       PUID: ${PUID}
@@ -101,7 +101,7 @@ services:
         bind:
           create_host_path: false
   bazarr:
-    image: lscr.io/linuxserver/bazarr:v1.6.2-ls367@sha256:c1673816321156b904af9b7e6415ea547ae9622e4acc375358f1e1eb9ed1e904
+    image: lscr.io/linuxserver/bazarr:v1.6.2-ls369@sha256:946dc8c5bb5331418eac60050cf40a63cb8f66ac039841dda493870e3559799c
     restart: on-failure
     environment:
       PUID: ${PUID}
@@ -136,7 +136,7 @@ services:
         bind:
           create_host_path: false
   seerr:
-    image: ghcr.io/seerr-team/seerr:v3.5.0@sha256:c33702abebcec295b69a1371417b3a350e31dfeacbae3158e790c86908dc3659
+    image: ghcr.io/seerr-team/seerr:v3.5.1@sha256:d8fab675b55ad293ded98fd71efcfd46054cbad9746534ae1cc4794a88c0b3be
     restart: on-failure
     init: true
     environment:
@@ -161,7 +161,7 @@ services:
         bind:
           create_host_path: false
   nzbget:
-    image: lscr.io/linuxserver/nzbget:v26.3-ls267@sha256:90f08a0c260f5ba3be401d9b21f7a92975ac0fb2331bb1f456ed9f09f3ca4ddb
+    image: lscr.io/linuxserver/nzbget:v26.3-ls268@sha256:ab18af1d16027fdf870fc58a39bbc764043b16e9220e06b9d0413e8b56bd622b
     restart: on-failure
     environment:
       PUID: ${PUID}
@@ -186,7 +186,7 @@ services:
         bind:
           create_host_path: false
   kometa:
-    image: lscr.io/linuxserver/kometa:v2.5.2-ls122@sha256:6cd9ebf316deecdd7d4dc6e339369f699f849749fdef9009bb51cdd882b0abe7
+    image: lscr.io/linuxserver/kometa:v2.5.3-ls123@sha256:1ca8d63b49a386c98c8bcfa3a625eb0ef9d00815ecb9a2286d471e7ba29aab0d
     restart: on-failure
     environment:
       PUID: ${PUID}
@@ -204,7 +204,7 @@ services:
         bind:
           create_host_path: false
   tautulli:
-    image: lscr.io/linuxserver/tautulli:v2.18.2-ls247@sha256:d3c53deb09f6b8fffd1476c7154da538394193955d1e909f3b126068102fb7cf
+    image: lscr.io/linuxserver/tautulli:v2.18.2-ls248@sha256:986125e67ab881504e6a71f93f8fe0932de0e1158f3060b53ca9d12ab38fa3be
     restart: on-failure
     environment:
       PUID: ${PUID}

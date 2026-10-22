@@ -55,6 +55,28 @@ def version(value):
     if not m: return None
     return tuple(map(int,m[1].split('.'))), int(m[2] or 0)
 
+def update_level(row):
+    """Classify stable releases; unknown identity alone cannot justify an alert."""
+    if row.get('lookup_error') or row['status'] in ('current', 'installed-ahead', 'unknown', 'channel-review'):
+        return 'none'
+    # Numeric image pins describe the installed release even if its API is down.
+    installed = version(row['installed_tag']) or version(row['installed_version'])
+    available = version(row['available_tag'])
+    # Plex appends a build hash to its four-component application version.
+    if row['service'] == 'plex':
+        installed = version(row['installed_version'].split('-')[0])
+        available = version(row['available_tag'].split('-')[0])
+    if not installed or not available:
+        return 'unknown'
+    old, new = installed[0], available[0]
+    if new[0] != old[0]:
+        return 'major' if new[0] > old[0] else 'none'
+    if new[1] != old[1]:
+        return 'minor' if new[1] > old[1] else 'none'
+    if new > old:
+        return 'patch'
+    return 'rebuild' if new == old else 'none'
+
 def candidate(tags, lsio=False, nginx=False):
     allowed = []
     for tag in tags:
@@ -72,7 +94,22 @@ def discover(repo, lsio=False, nginx=False):
         d,_ = fetch(f'https://hub.docker.com/v2/repositories/{repo}/tags?page_size=100&ordering=last_updated&page={page}')
         tags.extend(x['name'] for x in d['results'])
         if not d.get('next'): break
-    return candidate(tags,lsio,nginx)
+    try:
+        return candidate(tags,lsio,nginx)
+    except ValueError:
+        if repo != 'linuxserver/kometa' or not lsio:
+            raise
+        # Frequent nightly builds can displace stable tags from both pages.
+        release,_ = fetch('https://api.github.com/repos/Kometa-Team/Kometa/releases/latest')
+        stable = release['tag_name']
+        if release.get('prerelease') or release.get('draft') or not version(stable):
+            raise ValueError('nonstable Kometa release')
+        tags = []
+        for page in (1,2):
+            d,_ = fetch(f'https://hub.docker.com/v2/repositories/{repo}/tags?page_size=100&ordering=last_updated&page={page}&name={urllib.parse.quote(stable.lstrip("v"))}')
+            tags.extend(x['name'] for x in d['results'] if version(x['name']) and version(x['name'])[0] == version(stable)[0])
+            if not d.get('next'): break
+        return candidate(tags,lsio=True)
 
 def registry(repo, tag, arch, osname='linux'):
     """Compare config digests, not multiarch-index digests with image IDs."""
@@ -216,9 +253,11 @@ def run():
     except Exception as e: row.update(error_details(e));metric('lookup_ok',0,service='plex')
     metric('application_known',int(row['installed_version']!='unknown'),service='plex');rows.append(row)
     for row in rows:
+        row['update_level'] = update_level(row)
         row['lookup_failures'] = failure_streak(row, previous)
         metric('lookup_failures', row['lookup_failures'], service=row['service'])
         metric('info',1,**{k:row[k] for k in ('service','image','installed_tag','running_digest','image_id','architecture','channel','installed_channel','installed_version','version_source','available_tag','available_digest','status')})
+        metric('major_minor_update_available',int(row['update_level'] in ('major','minor')),service=row['service'])
         metric('update_available',int(row['status'] in ('update','image-rebuild','mutable-tag-changed')),service=row['service'])
     metric('checked_timestamp',now)
     atomic(ROOT/'versions.json',json.dumps({'checked':now,'rows':rows},indent=2));(ROOT/'versions.json').chmod(0o600)

@@ -2844,7 +2844,7 @@
           },
           "annotations": {
             "summary": "RecoveryStageUnhealthy",
-            "description": "Recovery stage {{ $labels.stage }} has unknown evidence, a failed last attempt, or no verified completion within 36 hours. Local bundle age does not establish NAS or B2 success. Cloud evidence must come from Hyper Backup. Review /opt/data/homelab/repo/backups/README.md on bb9b. Persistence threshold: 5m.",
+            "description": "Local or NAS recovery stage {{ $labels.stage }} has unknown evidence, a failed last attempt, or no verified completion within 36 hours. Cloud backup failure notifications are handled by Synology DSM Hyper Backup task bb9b-configs-b2. Review backups/README.md. Persistence threshold: 5m.",
             "__dashboardUid__": "homelab-overview",
             "__panelId__": "60"
           },
@@ -2858,7 +2858,7 @@
               },
               "model": {
                 "refId": "A",
-                "expr": "max by (host, stage) (label_replace((homelab_recovery_known == bool 0), \"signal\", \"unknown\", \"stage\", \".*\") or label_replace((homelab_recovery_success == bool 0), \"signal\", \"failed\", \"stage\", \".*\") or label_replace(((time() - homelab_recovery_completed_timestamp) > bool 129600), \"signal\", \"overdue\", \"stage\", \".*\"))",
+                "expr": "max by (host, stage) (label_replace((homelab_recovery_known{stage=~\"local|nas\"} == bool 0), \"signal\", \"unknown\", \"stage\", \".*\") or label_replace((homelab_recovery_success{stage=~\"local|nas\"} == bool 0), \"signal\", \"failed\", \"stage\", \".*\") or label_replace(((time() - homelab_recovery_completed_timestamp{stage=~\"local|nas\"}) > bool 129600), \"signal\", \"overdue\", \"stage\", \".*\"))",
                 "instant": true,
                 "range": false,
                 "intervalMs": 15000,
@@ -3449,8 +3449,8 @@
             "scope": "maintenance"
           },
           "annotations": {
-            "summary": "Stable container/application updates available; review installed versus available versions",
-            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "summary": "Major/minor stable container/application updates available; review installed versus available versions",
+            "description": "Read-only maintenance observer. Alerts include major/minor releases only; patch releases and image rebuilds remain inventory-only. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
             "__dashboardUid__": "homelab-overview",
             "__panelId__": "40"
           },
@@ -3464,7 +3464,7 @@
               },
               "model": {
                 "refId": "A",
-                "expr": "homelab_version_update_available",
+                "expr": "homelab_version_major_minor_update_available",
                 "instant": true,
                 "range": false,
                 "intervalMs": 15000,
@@ -3518,7 +3518,7 @@
           },
           "annotations": {
             "summary": "Daily version discovery is older than 28 hours or missing",
-            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "description": "Read-only maintenance observer. Alerts include major/minor releases only; patch releases and image rebuilds remain inventory-only. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
             "__dashboardUid__": "homelab-overview",
             "__panelId__": "40"
           },
@@ -3586,7 +3586,7 @@
           },
           "annotations": {
             "summary": "Stable release lookup failed on three consecutive checks; available version is unknown",
-            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "description": "Read-only maintenance observer. Alerts include major/minor releases only; patch releases and image rebuilds remain inventory-only. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
             "__dashboardUid__": "homelab-overview",
             "__panelId__": "40"
           },
@@ -3654,7 +3654,7 @@
           },
           "annotations": {
             "summary": "Installed application version could not be read",
-            "description": "Read-only maintenance observer. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
+            "description": "Read-only maintenance observer. Alerts include major/minor releases only; patch releases and image rebuilds remain inventory-only. No automatic upgrades. Overview panel 40 shows check timestamp, source and release channel. Unknown is never up-to-date. https://grafana.neldridge.net:3000/d/homelab-overview?viewPanel=40",
             "__dashboardUid__": "homelab-overview",
             "__panelId__": "40"
           },
